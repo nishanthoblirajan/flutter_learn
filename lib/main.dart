@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hello_world/productscreen.dart';
+import 'package:hello_world/layouts.dart';
+import 'package:hello_world/addproductscreen.dart';
 
-void main() => runApp(MyApp());
+
+void main() => runApp(
+    MaterialApp(
+      home: MyApp(),
+      routes: <String, WidgetBuilder>{
+        '/myapp':(context)=>MyApp(),
+        '/productscreen':(context)=>productscreen(),
+        '/addproductscreen':(context)=>addproductscreen()
+      },
+    ));
 
 class MyApp extends StatefulWidget {
   @override
@@ -11,70 +23,16 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Testing",
-      home: new Scaffold(
+    return new Scaffold(
         appBar: AppBar(
           title: Text('LSSM'),
         ),
         body: buildContainer(),
-        drawer: buildDrawer(),
-      ),
-    );
-  }
-
-  Drawer buildDrawer() => Drawer(
-        child: ListView(
-          children: <Widget>[
-            buildHeadingMenu('Menu'),
-            buildMenuItem('Dashboard'),
-            buildMenuItem('Product'),
-            buildHeadingMenu('Sale'),
-            buildMenuItem('Invoice'),
-            buildMenuItem('Payment'),
-            buildHeadingMenu('Purchase'),
-            buildMenuItem('Invoice'),
-            buildMenuItem('Payment'),
-            buildHeadingMenu('Expenses'),
-            buildMenuItem('New Expense'),
-            buildHeadingMenu('Service'),
-            buildMenuItem('Repair'),
-            buildHeadingMenu('Others'),
-            buildMenuItem('Banking'),
-            buildHeadingMenu('Admin'),
-            buildMenuItem('Report'),
-            buildMenuItem('Staff List'),
-            buildMenuItem('Change Password'),
-            buildMenuItem('Settings'),
-            buildMenuItem('Logout')
-          ],
-        ),
+        drawer: buildDrawer(context),
       );
-
-  /*TODO build menu dynamically using List<String> as the function argument*/
-  Widget buildMenuItem(String name) {
-    return Container(
-      child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
-        title: Text(name),
-        onTap: () {
-          /*TODO flutter toast not showing check the flutter package*/
-          Fluttertoast.showToast(msg: "Hello");},
-      ),
-    );
   }
 
-  Widget buildHeadingMenu(String name) {
-    return Container(
-      child: ListTile(
-        title: Text(
-          name,
-          style: TextStyle(color: Colors.blueGrey, fontSize: 12),
-        ),
-      ),
-    );
-  }
+
 
   Widget buildContainer() {
     return new Container(
