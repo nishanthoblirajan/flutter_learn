@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class addproductscreen extends StatefulWidget {
   @override
@@ -12,8 +13,30 @@ class _addproductscreenState extends State<addproductscreen> {
       appBar: AppBar(
         title: Text('Add Product'),
       ),
-      body: Container(
-        child: Text('Add Product Screen'),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              TextField(
+                decoration: InputDecoration(
+                labelText: 'Product Name'
+                ),
+                onSubmitted: (value){
+                  Fluttertoast.showToast(msg: value);
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(
+                    labelText: 'Product SKU'
+                ),
+                onSubmitted: (value){
+                  Fluttertoast.showToast(msg: value);
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

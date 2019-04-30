@@ -7,6 +7,8 @@ import 'package:hello_world/addproductscreen.dart';
 
 void main() => runApp(
     MaterialApp(
+      title: "Flutter testing",
+      debugShowCheckedModeBanner: false,
       home: MyApp(),
       routes: <String, WidgetBuilder>{
         '/myapp':(context)=>MyApp(),
