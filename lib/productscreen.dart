@@ -4,6 +4,8 @@ import 'package:hello_world/layouts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'ApplicationConstants.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
+import 'DataClasses/ProductDatabase.dart';
+import 'dart:convert';
 
 class productscreen extends StatefulWidget {
   @override
@@ -44,6 +46,7 @@ class _productscreenState extends State<productscreen> {
                     return ListView.builder(
                       itemBuilder: (BuildContext context, int index) {
                         return new ListTile(
+                          title: new Text(_productDatabase[index].productName),
                         );
                       },
                       itemCount: snapshot.data.length,
@@ -64,6 +67,9 @@ class _productscreenState extends State<productscreen> {
     initParse();
     super.initState();
   }
+
+  /*Necessary Functions*/
+  List<ProductDatabase> _productDatabase = [];
 
   initParse() async {
     Parse().initialize(ApplicationConstants.keyParseApplicationId,
@@ -86,7 +92,18 @@ class _productscreenState extends State<productscreen> {
     if (apiResponse.success && apiResponse.result != null) {
       final List<ParseObject> listFromApi = apiResponse.result;
       final ParseObject parseObject = listFromApi?.first;
-      print(parseObject.type.toString());
+      _productDatabase = new List();
+      for (int i = 0; i < listFromApi.length; i++) {
+        print(listFromApi[i].toString());
+        Map output = json.decode(listFromApi[i].toString());
+        ProductDatabase productDatabase =
+        new ProductDatabase.fromJson(output);
+        print(productDatabase.objectId);
+        setState(() {
+          _productDatabase.add(productDatabase);
+        });
+      }
+      return _productDatabase;
     } else {
       print('Result: ${apiResponse.error.message}');
     }
