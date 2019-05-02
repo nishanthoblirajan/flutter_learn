@@ -46,7 +46,9 @@ class _productscreenState extends State<productscreen> {
                     return ListView.builder(
                       itemBuilder: (BuildContext context, int index) {
                         return new ListTile(
-                          title: new Text(_productDatabase[index].productName),
+                          title: Text(_productDatabase[index].productName),
+                          subtitle: Text(" Quantity: "+_productDatabase[index].productQuantity+" SKU: "+_productDatabase[index].productSku),
+                          trailing: Text("\u20B9"+_productDatabase[index].productSalePrice),
                         );
                       },
                       itemCount: snapshot.data.length,
