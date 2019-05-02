@@ -26,14 +26,30 @@ class _addproductscreenState extends State<addproductscreen> {
                   Fluttertoast.showToast(msg: value);
                 },
               ),
-              TextField(
-                decoration: InputDecoration(
-                    labelText: 'Product SKU'
-                ),
-                onSubmitted: (value){
-                  Fluttertoast.showToast(msg: value);
-                },
-              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                          labelText: 'Product SKU'
+                      ),
+                      onSubmitted: (value){
+                        Fluttertoast.showToast(msg: value);
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: RaisedButton(
+                      onPressed: () {
+                        Fluttertoast.showToast(msg: 'Scan Barcode');
+                        Navigator.pushNamed(context, '/addproductscreen');
+                      },
+                      child: Text('Add New Product'),
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
         ),
