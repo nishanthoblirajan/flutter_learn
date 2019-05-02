@@ -18,7 +18,6 @@ environment:
 
 dependencies:
   fluttertoast: ^2.1.4
-  barcode_scan: ^1.0.0
 
   flutter:
     sdk: flutter
