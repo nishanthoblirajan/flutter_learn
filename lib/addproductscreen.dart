@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:barcode_scan/barcode_scan.dart';
+import 'package:flutter/services.dart';
+
 
 class addproductscreen extends StatefulWidget {
   @override
@@ -7,6 +10,9 @@ class addproductscreen extends StatefulWidget {
 }
 
 class _addproductscreenState extends State<addproductscreen> {
+  String barcode = "";
+  TextEditingController barcodeController = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,6 +37,7 @@ class _addproductscreenState extends State<addproductscreen> {
                 children: <Widget>[
                   Expanded(
                     child: TextField(
+                      controller: barcodeController,
                       decoration: InputDecoration(
                           labelText: 'Product SKU'
                       ),
@@ -43,7 +50,7 @@ class _addproductscreenState extends State<addproductscreen> {
                     child: RaisedButton(
                       onPressed: () {
                         Fluttertoast.showToast(msg: 'Scan Barcode');
-                        Navigator.pushNamed(context, '/addproductscreen');
+                        barcodeScanning;
                       },
                       child: Text('Add New Product'),
                     ),
@@ -55,5 +62,28 @@ class _addproductscreenState extends State<addproductscreen> {
         ),
       ),
     );
+  }
+
+  Future barcodeScanning() async{
+    try {
+      String barcode = await BarcodeScanner.scan();
+      setState(() {
+        this.barcode = barcode;
+        barcodeController.text=barcode;
+      });
+    } on PlatformException catch (e) {
+      if (e.code == BarcodeScanner.CameraAccessDenied) {
+        setState(() {
+          this.barcode = 'No camera permission!';
+        });
+      } else {
+        setState(() => this.barcode = 'Unknown error: $e');
+      }
+    } on FormatException {
+      setState(() => this.barcode =
+      'Nothing captured.');
+    } catch (e) {
+      setState(() => this.barcode = 'Unknown error: $e');
+    }
   }
 }
