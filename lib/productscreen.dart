@@ -48,9 +48,9 @@ class _productscreenState extends State<productscreen> {
                       itemBuilder: (BuildContext context, int index) {
                         return new ListTile(
                           onTap: ()=>_showDialog(context,_productDatabase[index]),
-                         title: Text(_productDatabase[index].productName),
-                          subtitle: Text(" Quantity: "+_productDatabase[index].productQuantity+" SKU: "+_productDatabase[index].productSku),
-                          trailing: Text("\u20B9"+_productDatabase[index].productSalePrice),
+                         title: Text(_productDatabase[index].name),
+                          subtitle: Text(" Quantity: "+_productDatabase[index].quantity+" SKU: "+_productDatabase[index].sku),
+                          trailing: Text("\u20B9"+_productDatabase[index].salePrice),
                         );
                       },
                       itemCount: snapshot.data.length,
@@ -101,7 +101,7 @@ class _productscreenState extends State<productscreen> {
         print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
         ProductDatabase productDatabase =
-        new ProductDatabase.fromJson(output);
+        new ProductDatabase().fromJson(output);
         print(productDatabase.objectId);
         setState(() {
           _productDatabase.add(productDatabase);
@@ -117,10 +117,10 @@ class _productscreenState extends State<productscreen> {
     showDialog(context: context, builder: (BuildContext context) {
       return new AlertDialog(
         title: new Text("You selected " +
-            productDatabase.productName),
+            productDatabase.name),
         content: new Text(
-            "SKU ${productDatabase.productSku} -> ${productDatabase
-                .productSalePrice}"),
+            "SKU ${productDatabase.sku} -> ${productDatabase
+                .salePrice}"),
         actions: <Widget>[
           new FlatButton(
               onPressed: () {

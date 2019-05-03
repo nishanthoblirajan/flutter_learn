@@ -1,68 +1,56 @@
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 class ProductDatabase extends ParseObject implements ParseCloneable{
-  String className;
-  String objectId;
-  String sgst;
-  String productSku;
-  String taxCode;
-  String categoryName;
-  String productPurchasePrice;
-  String roCode;
-  String taxName;
-  String cgst;
-  String productName;
-  String productQuantity;
-  String productSalePrice;
 
-  ProductDatabase(
-      {this.className,
-        this.objectId,
-        this.sgst,
-        this.productSku,
-        this.taxCode,
-        this.categoryName,
-        this.productPurchasePrice,
-        this.roCode,
-        this.taxName,
-        this.cgst,
-        this.productName,
-        this.productQuantity,
-        this.productSalePrice});
+  ProductDatabase() : super(_keyTableName);
+  ProductDatabase.clone(): this();
 
-  ProductDatabase.fromJson(Map<String, dynamic> json) {
-    className = json['className'];
-    objectId = json['objectId'];
-    sgst = json['sgst'];
-    productSku = json['product_sku'];
-    taxCode = json['tax_code'];
-    categoryName = json['category_name'];
-    productPurchasePrice = json['product_purchase_price'];
-    roCode = json['ro_code'];
-    taxName = json['tax_name'];
-    cgst = json['cgst'];
-    productName = json['product_name'];
-    productQuantity = json['product_quantity'];
-    productSalePrice = json['product_sale_price'];
-  }
+  /// Looks strangely hacky but due to Flutter not using reflection, we have to
+  /// mimic a clone
+  @override clone(Map map) => ProductDatabase.clone()..fromJson(map);
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['className'] = this.className;
-    data['objectId'] = this.objectId;
-    data['sgst'] = this.sgst;
-    data['product_sku'] = this.productSku;
-    data['tax_code'] = this.taxCode;
-    data['category_name'] = this.categoryName;
-    data['product_purchase_price'] = this.productPurchasePrice;
-    data['ro_code'] = this.roCode;
-    data['tax_name'] = this.taxName;
-    data['cgst'] = this.cgst;
-    data['product_name'] = this.productName;
-    data['product_quantity'] = this.productQuantity;
-    data['product_sale_price'] = this.productSalePrice;
-    return data;
-  }
+  static const String _keyTableName = 'ProductDatabase';
+
+  static const String keyName = 'product_name';
+  String get name => get<String>(keyName);
+  set name(String name) => set<String>(keyName, name);
+
+  static const String keySKU = 'product_sku';
+  String get sku => get<String>(keySKU);
+  set sku(String sku) => set<String>(keySKU, sku);
+
+  static const String keySalePrice = 'product_sale_price';
+  String get salePrice => get<String>(keySalePrice);
+  set salePrice(String salePrice) => set<String>(keySalePrice, salePrice);
+
+  static const String keyPurchasePrice = 'product_purchase_price';
+  String get purchasePrice => get<String>(keyPurchasePrice);
+  set purchasePrice(String purchasePrice) => set<String>(keyPurchasePrice, purchasePrice);
+
+  static const String keyQuantity = 'product_quantity';
+  String get quantity => get<String>(keyQuantity);
+  set quantity(String quantity) => set<String>(keyQuantity, quantity);
+
+  static const String keyTaxCode = 'tax_code';
+  String get taxCode => get<String>(keyTaxCode);
+  set taxCode(String taxCode) => set<String>(keyTaxCode, taxCode);
+
+  static const String keyTaxName = 'tax_name';
+  String get taxName => get<String>(keyTaxName);
+  set taxName(String taxName) => set<String>(keyTaxName, taxName);
+
+  static const String keySgst = 'sgst';
+  String get sgst => get<String>(keySgst);
+  set sgst(String sgst) => set<String>(keySgst, sgst);
+
+  static const String keyCgst = 'cgst';
+  String get cgst => get<String>(keyCgst);
+  set cgst(String cgst) => set<String>(keyCgst, cgst);
+
+  static const String keyCategoryName = 'category_name';
+  String get categoryName => get<String>(keyCategoryName);
+  set categoryName(String categoryName) => set<String>(keyCategoryName, categoryName);
+
 
 
 

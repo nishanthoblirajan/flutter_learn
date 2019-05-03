@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
-
+import 'DataClasses/ProductDatabase.dart';
 
 class addproductscreen extends StatefulWidget {
-
   @override
   _addproductscreenState createState() => _addproductscreenState();
 }
@@ -38,12 +37,8 @@ class _addproductscreenState extends State<addproductscreen> {
               children: <Widget>[
                 TextFormField(
                   controller: nameController,
-                  decoration: InputDecoration(
-                  labelText: 'Product Name'
-
-                  ),
+                  decoration: InputDecoration(labelText: 'Product Name'),
                   textInputAction: TextInputAction.next,
-
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -51,11 +46,8 @@ class _addproductscreenState extends State<addproductscreen> {
                     Expanded(
                       child: TextFormField(
                         controller: barcodeController,
-                        decoration: InputDecoration(
-                            labelText: 'Product SKU'
-                        ),
+                        decoration: InputDecoration(labelText: 'Product SKU'),
                         textInputAction: TextInputAction.next,
-
                       ),
                     ),
                     Expanded(
@@ -71,77 +63,58 @@ class _addproductscreenState extends State<addproductscreen> {
                 ),
                 TextFormField(
                   controller: salePriceController,
-                  decoration: InputDecoration(
-                      labelText: 'Sale Price'
-                  ),
+                  decoration: InputDecoration(labelText: 'Sale Price'),
                   textInputAction: TextInputAction.next,
-
                 ),
                 TextFormField(
                   controller: purchasePriceController,
-                  decoration: InputDecoration(
-                      labelText: 'Purchase Price'
-                  ),
+                  decoration: InputDecoration(labelText: 'Purchase Price'),
                   textInputAction: TextInputAction.next,
-
                 ),
                 TextFormField(
                   controller: quantityController,
-                  decoration: InputDecoration(
-                      labelText: 'Quantity'
-                  ),
+                  decoration: InputDecoration(labelText: 'Quantity'),
                   textInputAction: TextInputAction.next,
-
                 ),
                 TextFormField(
                   controller: taxCodeController,
-                  decoration: InputDecoration(
-                      labelText: 'Tax Code'
-                  ),
-
+                  decoration: InputDecoration(labelText: 'Tax Code'),
                   textInputAction: TextInputAction.next,
-
                 ),
                 TextFormField(
                   controller: taxNameController,
-                  decoration: InputDecoration(
-                      labelText: 'Tax Name'
-                  ),
+                  decoration: InputDecoration(labelText: 'Tax Name'),
                   textInputAction: TextInputAction.next,
-
                 ),
                 TextFormField(
                   controller: sgstController,
-                  decoration: InputDecoration(
-                      labelText: 'SGST'
-                  ),
+                  decoration: InputDecoration(labelText: 'SGST'),
                   textInputAction: TextInputAction.next,
-
                 ),
                 TextFormField(
                   controller: cgstController,
-                  decoration: InputDecoration(
-                      labelText: 'CGST'
-                  ),
+                  decoration: InputDecoration(labelText: 'CGST'),
                   textInputAction: TextInputAction.next,
-
                 ),
                 TextFormField(
                   controller: categoryController,
-                  decoration: InputDecoration(
-                      labelText: 'Category'
-                  ),
+                  decoration: InputDecoration(labelText: 'Category'),
                   textInputAction: TextInputAction.next,
-
                 ),
-                Expanded(
-                  child: RaisedButton(
-                    onPressed: () {
-                      addProductToDatabase();
-                    },
-                    child: Text('Add Product'),
-                  ),
-                ),
+                RaisedButton(
+                  onPressed: () {
+                    addProductToDatabase();
+                  },
+                  child: Text('Add Product'),
+                )
+//                Expanded(
+//                  child: RaisedButton(
+//                    onPressed: () {
+//                      addProductToDatabase();
+//                    },
+//                    child: Text('Add Product'),
+//                  ),
+//                ),
               ],
             ),
           ),
@@ -150,12 +123,11 @@ class _addproductscreenState extends State<addproductscreen> {
     );
   }
 
-
   Future barcodeScanning() async {
     try {
       String barcode = await BarcodeScanner.scan();
       setState(() {
-        this.barcode=barcode;
+        this.barcode = barcode;
         barcodeController.text = barcode;
       });
     } on PlatformException catch (e) {
@@ -167,14 +139,28 @@ class _addproductscreenState extends State<addproductscreen> {
         setState(() => this.barcode = 'Unknown error: $e');
       }
     } on FormatException {
-      setState(() => this.barcode =
-      'Nothing captured.');
+      setState(() => this.barcode = 'Nothing captured.');
     } catch (e) {
       setState(() => this.barcode = 'Unknown error: $e');
     }
   }
 
-  void addProductToDatabase() {
+  Future addProductToDatabase() async {
+    ProductDatabase productDatabase = new ProductDatabase();
+    productDatabase.name = nameController.text;
+    productDatabase.sku = barcodeController.text;
+    productDatabase.salePrice = salePriceController.text;
+    productDatabase.purchasePrice = purchasePriceController.text;
+    productDatabase.quantity = quantityController.text;
+    productDatabase.taxCode = taxCodeController.text;
+    productDatabase.taxName = taxNameController.text;
+    productDatabase.sgst = sgstController.text;
+    productDatabase.cgst = cgstController.text;
+    productDatabase.categoryName = categoryController.text;
 
+    var saveResponse = await productDatabase.save();
+    if (saveResponse.success) {
+      Fluttertoast.showToast(msg: 'Product Saved');
+    }
   }
 }
