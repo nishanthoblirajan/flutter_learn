@@ -66,10 +66,6 @@ class _addproductscreenState extends State<addproductscreen> {
   }
 
 
-
-
-
-
   Future barcodeScanning() async {
     try {
       String barcode = await BarcodeScanner.scan();
