@@ -1,8 +1,8 @@
-class ProductDatabase {
+import 'package:parse_server_sdk/parse_server_sdk.dart';
+
+class ProductDatabase extends ParseObject implements ParseCloneable{
   String className;
   String objectId;
-  String createdAt;
-  String updatedAt;
   String sgst;
   String productSku;
   String taxCode;
@@ -18,8 +18,6 @@ class ProductDatabase {
   ProductDatabase(
       {this.className,
         this.objectId,
-        this.createdAt,
-        this.updatedAt,
         this.sgst,
         this.productSku,
         this.taxCode,
@@ -35,8 +33,6 @@ class ProductDatabase {
   ProductDatabase.fromJson(Map<String, dynamic> json) {
     className = json['className'];
     objectId = json['objectId'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
     sgst = json['sgst'];
     productSku = json['product_sku'];
     taxCode = json['tax_code'];
@@ -54,8 +50,6 @@ class ProductDatabase {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['className'] = this.className;
     data['objectId'] = this.objectId;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
     data['sgst'] = this.sgst;
     data['product_sku'] = this.productSku;
     data['tax_code'] = this.taxCode;
@@ -69,4 +63,7 @@ class ProductDatabase {
     data['product_sale_price'] = this.productSalePrice;
     return data;
   }
+
+
+
 }
