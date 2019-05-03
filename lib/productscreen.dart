@@ -6,6 +6,7 @@ import 'ApplicationConstants.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'DataClasses/ProductDatabase.dart';
 import 'dart:convert';
+import 'package:giffy_dialog/giffy_dialog.dart';
 
 class productscreen extends StatefulWidget {
   @override
@@ -46,7 +47,8 @@ class _productscreenState extends State<productscreen> {
                     return ListView.builder(
                       itemBuilder: (BuildContext context, int index) {
                         return new ListTile(
-                          title: Text(_productDatabase[index].productName),
+                          onTap: ()=>_showDialog(context,_productDatabase[index]),
+                         title: Text(_productDatabase[index].productName),
                           subtitle: Text(" Quantity: "+_productDatabase[index].productQuantity+" SKU: "+_productDatabase[index].productSku),
                           trailing: Text("\u20B9"+_productDatabase[index].productSalePrice),
                         );
@@ -110,4 +112,29 @@ class _productscreenState extends State<productscreen> {
       print('Result: ${apiResponse.error.message}');
     }
   }
+
+  _showDialog(BuildContext context, ProductDatabase productDatabase) {
+    showDialog(context: context, builder: (BuildContext context) {
+      return new AlertDialog(
+        title: new Text("You selected " +
+            productDatabase.productName),
+        content: new Text(
+            "SKU ${productDatabase.productSku} -> ${productDatabase
+                .productSalePrice}"),
+        actions: <Widget>[
+          new FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: new Text("Edit")),
+          new FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: new Text("Close"))
+        ],
+      );
+    });
+  }
+
 }
