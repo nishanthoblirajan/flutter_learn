@@ -160,7 +160,15 @@ class _addproductscreenState extends State<addproductscreen> {
 
     var saveResponse = await productDatabase.save();
     if (saveResponse.success) {
-      Fluttertoast.showToast(msg: 'Product Saved');
+      Fluttertoast.showToast(msg: 'Product Saved',
+      backgroundColor: Colors.blue);
+      Navigator.pop(context);
+    }else{
+      Fluttertoast.showToast(msg: 'Product Saved',
+        backgroundColor: Colors.red
+      );
+
     }
+
   }
 }
