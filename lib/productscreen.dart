@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/main.dart';
 import 'package:hello_world/layouts.dart';
+import 'package:hello_world/addproductscreen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'ApplicationConstants.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
@@ -124,7 +125,9 @@ class _productscreenState extends State<productscreen> {
         actions: <Widget>[
           new FlatButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.push(context,MaterialPageRoute(builder: (context)=>addproductscreen(
+                  receivedProductDatabase: productDatabase,
+                )));
               },
               child: new Text("Edit")),
           new FlatButton(
