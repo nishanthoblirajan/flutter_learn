@@ -96,7 +96,6 @@ class _productscreenState extends State<productscreen> {
     ParseResponse apiResponse = await queryBuilder.query();
     if (apiResponse.success && apiResponse.result != null) {
       final List<ParseObject> listFromApi = apiResponse.result;
-      final ParseObject parseObject = listFromApi?.first;
       _productDatabase = new List();
       for (int i = 0; i < listFromApi.length; i++) {
         print(listFromApi[i].toString());

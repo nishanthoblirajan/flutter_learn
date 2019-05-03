@@ -35,6 +35,14 @@ class _addproductscreenState extends State<addproductscreen> {
       ProductDatabase productDatabase = widget.receivedProductDatabase;
       nameController.text=productDatabase.name;
       barcodeController.text=productDatabase.sku;
+      salePriceController.text=productDatabase.salePrice;
+      purchasePriceController.text=productDatabase.purchasePrice;
+      quantityController.text=productDatabase.quantity;
+      taxCodeController.text=productDatabase.taxCode;
+      taxNameController.text=productDatabase.taxName;
+      sgstController.text=productDatabase.sgst;
+      cgstController.text=productDatabase.cgst;
+      categoryController.text=productDatabase.categoryName;
 
     }
     super.initState();
