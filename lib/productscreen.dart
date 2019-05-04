@@ -17,6 +17,8 @@ class productscreen extends StatefulWidget {
 /*TODO show all the products added below the Add New Products Button*/
 
 class _productscreenState extends State<productscreen> {
+
+  String loadingScreen = "Loading...";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +43,7 @@ class _productscreenState extends State<productscreen> {
                   if (snapshot.data == null) {
                     return Container(
                       child: Center(
-                        child: Text("Loading..."),
+                        child: Text(loadingScreen),
                       ),
                     );
                   } else {
@@ -109,6 +111,9 @@ class _productscreenState extends State<productscreen> {
       }
       return _productDatabase;
     } else {
+      setState(() {
+        loadingScreen="No data found";
+      });
       print('Result: ${apiResponse.error.message}');
     }
   }

@@ -5,17 +5,15 @@ import 'package:flutter/services.dart';
 import 'DataClasses/ProductDatabase.dart';
 
 class addproductscreen extends StatefulWidget {
-
   ProductDatabase receivedProductDatabase;
-  addproductscreen({Key key, this.receivedProductDatabase}):super(key:key);
+
+  addproductscreen({Key key, this.receivedProductDatabase}) : super(key: key);
 
   @override
   _addproductscreenState createState() => _addproductscreenState();
-
 }
 
 class _addproductscreenState extends State<addproductscreen> {
-
   String operationType = "Add";
   String barcode = "";
   TextEditingController nameController = new TextEditingController();
@@ -28,34 +26,33 @@ class _addproductscreenState extends State<addproductscreen> {
   TextEditingController sgstController = new TextEditingController();
   TextEditingController cgstController = new TextEditingController();
   TextEditingController categoryController = new TextEditingController();
+
   @override
-  initState(){
-    if (widget.receivedProductDatabase!=null){
+  initState() {
+    if (widget.receivedProductDatabase != null) {
       operationType = "Edit";
       ProductDatabase productDatabase = widget.receivedProductDatabase;
-      nameController.text=productDatabase.name;
-      barcodeController.text=productDatabase.sku;
-      salePriceController.text=productDatabase.salePrice;
-      purchasePriceController.text=productDatabase.purchasePrice;
-      quantityController.text=productDatabase.quantity;
-      taxCodeController.text=productDatabase.taxCode;
-      taxNameController.text=productDatabase.taxName;
-      sgstController.text=productDatabase.sgst;
-      cgstController.text=productDatabase.cgst;
-      categoryController.text=productDatabase.categoryName;
-
+      print('Received Product ' + productDatabase.toString());
+      nameController.text = productDatabase.name;
+      barcodeController.text = productDatabase.sku;
+      salePriceController.text = productDatabase.salePrice;
+      purchasePriceController.text = productDatabase.purchasePrice;
+      quantityController.text = productDatabase.quantity;
+      taxCodeController.text = productDatabase.taxCode;
+      taxNameController.text = productDatabase.taxName;
+      sgstController.text = productDatabase.sgst;
+      cgstController.text = productDatabase.cgst;
+      categoryController.text = productDatabase.categoryName;
     }
     super.initState();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
-        title: Text(operationType+" Product"),
+        title: Text(operationType + " Product"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -129,12 +126,7 @@ class _addproductscreenState extends State<addproductscreen> {
                   decoration: InputDecoration(labelText: 'Category'),
                   textInputAction: TextInputAction.next,
                 ),
-                RaisedButton(
-                  onPressed: () {
-                    addProductToDatabase();
-                  },
-                  child: Text(operationType+" Product"),
-                )
+                buildRaisedButton()
 //                Expanded(
 //                  child: RaisedButton(
 //                    onPressed: () {
@@ -149,6 +141,36 @@ class _addproductscreenState extends State<addproductscreen> {
         ),
       ),
     );
+  }
+
+  Widget buildRaisedButton() {
+    Widget deleteButton = RaisedButton(onPressed: (){
+      deleteProductFromDatabase();
+    },
+      child: Text('Delete Product'),);
+
+    Widget normalButton=RaisedButton(
+      onPressed: () {
+        addProductToDatabase();
+      },
+      child: Text(operationType + " Product"),
+    );
+
+    if(widget.receivedProductDatabase != null){
+      return Column(
+        children: <Widget>[
+          normalButton,
+          deleteButton
+        ],
+      );
+    }else{
+      return Column(
+        children: <Widget>[
+          normalButton
+        ],
+      );
+    }
+
   }
 
   Future barcodeScanning() async {
@@ -174,10 +196,12 @@ class _addproductscreenState extends State<addproductscreen> {
   }
 
   Future addProductToDatabase() async {
-    if(widget.receivedProductDatabase!=null){
-
-      String objectID = widget.receivedProductDatabase.get('objectID');
-      ProductDatabase productDatabase = await ProductDatabase().fromPin(objectID);
+    if (widget.receivedProductDatabase != null) {
+      Fluttertoast.showToast(msg: "Editing");
+      String objectID = widget.receivedProductDatabase.get('objectId');
+      print('ObjectID: ' + objectID);
+      ProductDatabase productDatabase = new ProductDatabase();
+      productDatabase.set('objectId', objectID);
       productDatabase.name = nameController.text;
       productDatabase.sku = barcodeController.text;
       productDatabase.salePrice = salePriceController.text;
@@ -188,8 +212,17 @@ class _addproductscreenState extends State<addproductscreen> {
       productDatabase.sgst = sgstController.text;
       productDatabase.cgst = cgstController.text;
       productDatabase.categoryName = categoryController.text;
-      productDatabase.pin();
-    }else {
+
+      var saveResponse = await productDatabase.save();
+      if (saveResponse.success) {
+        Fluttertoast.showToast(
+            msg: 'Product Saved', backgroundColor: Colors.blue);
+        Navigator.pop(context);
+      } else {
+        Fluttertoast.showToast(
+            msg: 'Error', backgroundColor: Colors.red);
+      }
+    } else {
       ProductDatabase productDatabase = new ProductDatabase();
       productDatabase.name = nameController.text;
       productDatabase.sku = barcodeController.text;
@@ -204,15 +237,33 @@ class _addproductscreenState extends State<addproductscreen> {
 
       var saveResponse = await productDatabase.save();
       if (saveResponse.success) {
-        Fluttertoast.showToast(msg: 'Product Saved',
-            backgroundColor: Colors.blue);
+        Fluttertoast.showToast(
+            msg: 'Product Saved', backgroundColor: Colors.blue);
         Navigator.pop(context);
       } else {
-        Fluttertoast.showToast(msg: 'Product Saved',
-            backgroundColor: Colors.red
-        );
+        Fluttertoast.showToast(
+            msg: 'Error', backgroundColor: Colors.red);
       }
+    }
+  }
+
+  Future deleteProductFromDatabase() async {
+    String objectID = widget.receivedProductDatabase.get('objectId');
+    print('Delete '+objectID );
+    ProductDatabase productDatabase = new ProductDatabase();
+    productDatabase.set('objectId', objectID);
+    print('Delete '+productDatabase.toString());
+    var deleteResponse = await productDatabase.delete();
+    if (deleteResponse.success) {
+      Fluttertoast.showToast(
+          msg: 'Product Deleted', backgroundColor: Colors.blue);
+      Navigator.pop(context,true);
+    } else {
+      Fluttertoast.showToast(
+          msg: 'Error', backgroundColor: Colors.red);
     }
 
   }
 }
+
+
