@@ -11,6 +11,10 @@ class ProductDatabase extends ParseObject implements ParseCloneable{
 
   static const String _keyTableName = 'ProductDatabase';
 
+  static const String roCode = 'ro_code';
+  String get ro_code => get<String>(roCode);
+  set ro_code(String ro_code) => set<String>(roCode, ro_code);
+
   static const String keyName = 'product_name';
   String get name => get<String>(keyName);
   set name(String name) => set<String>(keyName, name);

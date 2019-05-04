@@ -3,7 +3,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hello_world/productscreen.dart';
 import 'package:hello_world/layouts.dart';
 import 'package:hello_world/addproductscreen.dart';
-
+import 'package:parse_server_sdk/parse_server_sdk.dart';
+import 'ApplicationConstants.dart';
+import 'saleinvoice.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(
     MaterialApp(
@@ -13,7 +16,8 @@ void main() => runApp(
       routes: <String, WidgetBuilder>{
         '/myapp':(context)=>MyApp(),
         '/productscreen':(context)=>productscreen(),
-        '/addproductscreen':(context)=>addproductscreen()
+        '/addproductscreen':(context)=>addproductscreen(),
+        '/saleinvoice':(context)=>saleinvoice()
       },
     ));
 
@@ -22,7 +26,11 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
+
+
 class _MyAppState extends State<MyApp> {
+    SharedPreferences sharedPreferences;
+    String roCode;
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -35,10 +43,42 @@ class _MyAppState extends State<MyApp> {
   }
 
 
+  @override
+  initState(){
+    initParse();
+    _setSharedPreference();
+    super.initState();
+  }
+    initParse() async {
+      Parse().initialize(ApplicationConstants.keyParseApplicationId,
+          ApplicationConstants.keyParseServerUrl,
+          masterKey: ApplicationConstants.keyParseCustomerKey,
+          clientKey: ApplicationConstants.keyParseCustomerKey,
+          debug: true);
+      var response = await Parse().healthCheck();
+      if (response.success) {
+        print("Success");
+      } else {
+        print("Server health check failed");
+      }
+    }
+
 
   Widget buildContainer() {
     return new Container(
-      child: Text('Dashboard'),
+      child: Text('RO Code '+roCode),
     );
   }
+
+  _setSharedPreference() async{
+    sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.setString('ro_code', '12345');
+    setState(() {
+      roCode = sharedPreferences.getString('ro_code');
+    });
+  }
+
+
 }
+
+
