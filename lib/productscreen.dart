@@ -43,6 +43,11 @@ class _productscreenState extends State<productscreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Products'),
+      actions: <Widget>[
+        IconButton(icon: Icon(Icons.search), onPressed: (){
+          /*TODO implement search functionality*/
+        })
+      ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
