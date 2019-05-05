@@ -129,11 +129,11 @@ class _productscreenState extends State<productscreen> {
     }else if(textSearch!=""&&barCodeSearch==""){
       queryBuilder =
       QueryBuilder<ProductDatabase>(ProductDatabase())
-        ..whereEqualTo(ProductDatabase.roCode, '12345')..whereContains(ProductDatabase.keyName, textSearch)..whereContains(ProductDatabase.keySKU, textSearch);
+        ..whereEqualTo(ProductDatabase.roCode, '12345')..whereContains(ProductDatabase.keyName, textSearch);
     }else if(textSearch==""&&barCodeSearch!=""){
       queryBuilder =
       QueryBuilder<ProductDatabase>(ProductDatabase())
-        ..whereEqualTo(ProductDatabase.roCode, '12345')..whereContains(ProductDatabase.keySKU, textSearch);
+        ..whereEqualTo(ProductDatabase.roCode, '12345')..whereContains(ProductDatabase.keySKU, barCodeSearch);
     }else{
 
     }
