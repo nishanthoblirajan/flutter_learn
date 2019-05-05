@@ -65,7 +65,6 @@ class _productscreenState extends State<productscreen> {
                 Expanded(
                   child: RaisedButton(
                     onPressed: () {
-                      Fluttertoast.showToast(msg: 'Add New Product');
                       Navigator.pushNamed(context, '/addproductscreen');
                     },
                     child: Text('Add New Product'),

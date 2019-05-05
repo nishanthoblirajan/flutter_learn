@@ -60,6 +60,7 @@ class _addproductscreenState extends State<addproductscreen> {
     sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
       roCode = sharedPreferences.getString('ro_code');
+      categoryController.text=sharedPreferences.getString('Product_category');
     });
   }
 

@@ -36,8 +36,6 @@ Widget buildMenuItem(BuildContext context, String name, String route) {
         title: Text(name),
         onTap: () {
           Navigator.pushNamed(context, '/' + route);
-          /*TODO flutter toast not showing check the flutter package*/
-//          Fluttertoast.showToast(msg: "Hello");
         }),
   );
 }
@@ -48,9 +46,6 @@ Widget buildMenuItemWithout(String name) {
         contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
         title: Text(name),
         onTap: () {
-//          Navigator.pushNamed(context, '/'+route);
-          /*TODO flutter toast not showing check the flutter package*/
-//          Fluttertoast.showToast(msg: "Hello");
         }),
   );
 }

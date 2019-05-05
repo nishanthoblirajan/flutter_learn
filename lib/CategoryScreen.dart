@@ -60,6 +60,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         itemBuilder: (BuildContext context, int index) {
                           return new ListTile(
                             title: Text(_categoryDatabase[index].category_name),
+                            onTap: (){
+                              sharedPreferences.setString(categoryType+"_category", _categoryDatabase[index].category_name);
+                              Navigator.pop(context,true);
+                            },
                           );
                         },
                         itemCount: snapshot.data.length,
