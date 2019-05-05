@@ -11,6 +11,7 @@ import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/cupertino.dart';
 
 class productscreen extends StatefulWidget {
   @override
@@ -118,7 +119,7 @@ class _productscreenState extends State<productscreen> {
   }
 
   /*Necessary Functions*/
-  List<ProductDatabase> _productDatabase = [];
+  List<ProductDatabase> _productDatabase;
 
   query(String roCode,String textSearch,String barCodeSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
@@ -140,7 +141,10 @@ class _productscreenState extends State<productscreen> {
     ParseResponse apiResponse = await queryBuilder.query();
     if (apiResponse.success && apiResponse.result != null) {
       final List<ParseObject> listFromApi = apiResponse.result;
+      setState(() {
       _productDatabase = new List();
+
+      });
       for (int i = 0; i < listFromApi.length; i++) {
         print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
@@ -154,6 +158,7 @@ class _productscreenState extends State<productscreen> {
       return _productDatabase;
     } else {
       setState(() {
+//        _productDatabase.clear();
         loadingScreen = "No data found";
       });
       print('Result: ${apiResponse.error.message}');
@@ -217,7 +222,7 @@ class _productscreenState extends State<productscreen> {
           controller: searchTextController,
           decoration: new InputDecoration(
               prefixIcon: new Icon(Icons.search),
-              hintText: 'Search...'
+              hintText: 'Search...',
           ),
         );
       } else {

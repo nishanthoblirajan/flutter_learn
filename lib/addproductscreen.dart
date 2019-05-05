@@ -4,6 +4,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 import 'DataClasses/ProductDatabase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/cupertino.dart';
 
 class addproductscreen extends StatefulWidget {
   ProductDatabase receivedProductDatabase;
