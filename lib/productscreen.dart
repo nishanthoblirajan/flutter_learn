@@ -58,19 +58,26 @@ class _productscreenState extends State<productscreen> {
         child: new Container(
           child: new Column(
             children: <Widget>[
-              RaisedButton(
-                onPressed: () {
-                  Fluttertoast.showToast(msg: 'Add New Product');
-                  Navigator.pushNamed(context, '/addproductscreen');
-                },
-                child: Text('Add New Product'),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  _barcodeScanning();
-                },
-                child: Text('Scan'),
-              ),
+              Row(children: <Widget>[
+                Expanded(
+                  child: RaisedButton(
+                    onPressed: () {
+                      Fluttertoast.showToast(msg: 'Add New Product');
+                      Navigator.pushNamed(context, '/addproductscreen');
+                    },
+                    child: Text('Add New Product'),
+                  ),
+                ),
+                Expanded(
+                  child: RaisedButton(
+                    onPressed: () {
+                      _barcodeScanning();
+                    },
+                    child: Text('Scan'),
+                  ),
+                ),
+              ],)
+              ,
               Expanded(
                   child: new FutureBuilder(
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
