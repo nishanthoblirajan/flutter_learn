@@ -9,6 +9,8 @@ import 'DataClasses/ProductDatabase.dart';
 import 'dart:convert';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:barcode_scan/barcode_scan.dart';
+import 'package:flutter/services.dart';
 
 class productscreen extends StatefulWidget {
   @override
@@ -19,12 +21,13 @@ class productscreen extends StatefulWidget {
 
 class _productscreenState extends State<productscreen> {
 
+  TextEditingController searchTextController = new TextEditingController();
   @override
   initState() {
+    searchTextController.text="";
     initSharedPrefs();
     super.initState();
   }
-
 
   SharedPreferences sharedPreferences;
   String roCode;
@@ -38,15 +41,16 @@ class _productscreenState extends State<productscreen> {
 
   String loadingScreen = "Loading...";
 
+  Widget _appBarTitle = new Text('Products');
+  Icon _searchIcon = new Icon(Icons.search);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Products'),
+        title: _appBarTitle,
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.search), onPressed: (){
-
-          })
+          IconButton(icon: _searchIcon, onPressed: () {_searchPressed();})
         ],
       ),
       body: Padding(
@@ -61,7 +65,14 @@ class _productscreenState extends State<productscreen> {
                 },
                 child: Text('Add New Product'),
               ),
-              Expanded(child: new FutureBuilder(
+              RaisedButton(
+                onPressed: () {
+                  _barcodeScanning();
+                },
+                child: Text('Scan'),
+              ),
+              Expanded(
+                  child: new FutureBuilder(
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.data == null) {
                     return Container(
@@ -76,9 +87,10 @@ class _productscreenState extends State<productscreen> {
                           onTap: () =>
                               _showDialog(context, _productDatabase[index]),
                           title: Text(_productDatabase[index].name),
-                          subtitle: Text(
-                              " Quantity: " + _productDatabase[index].quantity +
-                                  " SKU: " + _productDatabase[index].sku),
+                          subtitle: Text(" Quantity: " +
+                              _productDatabase[index].quantity +
+                              " SKU: " +
+                              _productDatabase[index].sku),
                           trailing: Text(
                               "\u20B9" + _productDatabase[index].salePrice),
                         );
@@ -87,9 +99,8 @@ class _productscreenState extends State<productscreen> {
                     );
                   }
                 },
-                future: query(roCode),
-              )
-              ),
+                future: query(roCode,searchTextController.text),
+              )),
             ],
           ),
         ),
@@ -97,15 +108,21 @@ class _productscreenState extends State<productscreen> {
     );
   }
 
-
   /*Necessary Functions*/
   List<ProductDatabase> _productDatabase = [];
 
+  query(String roCode,String search) async {
+    QueryBuilder<ParseObject> queryBuilder;
+    if(search==""){
+      queryBuilder =
+      QueryBuilder<ProductDatabase>(ProductDatabase())
+        ..whereEqualTo(ProductDatabase.roCode, '12345');
+    }else{
+      queryBuilder =
+      QueryBuilder<ProductDatabase>(ProductDatabase())
+        ..whereEqualTo(ProductDatabase.roCode, '12345')..whereContains(ProductDatabase.keyName, search);
+    }
 
-  query(String roCode) async {
-    QueryBuilder<ParseObject> queryBuilder = QueryBuilder<ProductDatabase>(
-        ProductDatabase())
-      ..whereEqualTo(ProductDatabase.roCode, '12345');
 
     ParseResponse apiResponse = await queryBuilder.query();
     if (apiResponse.success && apiResponse.result != null) {
@@ -115,8 +132,8 @@ class _productscreenState extends State<productscreen> {
         print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
         ProductDatabase productDatabase =
-        new ProductDatabase().fromJson(output);
-        print(productDatabase.objectId);
+            new ProductDatabase().fromJson(output);
+        print(productDatabase.name);
         setState(() {
           _productDatabase.add(productDatabase);
         });
@@ -131,57 +148,84 @@ class _productscreenState extends State<productscreen> {
   }
 
   _showDialog(BuildContext context, ProductDatabase productDatabase) {
-    showDialog(context: context, builder: (BuildContext context) {
-      return new AlertDialog(
-        title: new Text("You selected " +
-            productDatabase.name),
-        content: new Text(
-            "SKU ${productDatabase.sku} -> ${productDatabase
-                .salePrice}"),
-        actions: <Widget>[
-          new FlatButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                    addproductscreen(
-                      receivedProductDatabase: productDatabase,
-                    )));
-              },
-              child: new Text("Edit")),
-          new FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: new Text("Close"))
-        ],
-      );
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text("You selected " + productDatabase.name),
+            content: new Text(
+                "SKU ${productDatabase.sku} -> ${productDatabase.salePrice}"),
+            actions: <Widget>[
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => addproductscreen(
+                                  receivedProductDatabase: productDatabase,
+                                )));
+                  },
+                  child: new Text("Edit")),
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: new Text("Close"))
+            ],
+          );
+        });
+  }
+
+
+  /*TODO test barcode scanning*/
+  Future _barcodeScanning() async {
+    try {
+      String barcode = await BarcodeScanner.scan();
+      setState(() {
+        searchTextController.text = barcode;
+        if (this._searchIcon.icon == Icons.search) {
+          this._searchIcon = new Icon(Icons.close);
+          this._appBarTitle = new TextField(
+            controller: searchTextController,
+            decoration: new InputDecoration(
+                prefixIcon: new Icon(Icons.search),
+                hintText: 'Search...'
+            ),
+          );
+        } else {
+          this._searchIcon = new Icon(Icons.search);
+          this._appBarTitle = new Text('Products');
+        }
+      });
+    } on PlatformException catch (e) {
+      if (e.code == BarcodeScanner.CameraAccessDenied) {
+
+      } else {
+      }
+    } on FormatException {
+    } catch (e) {
+    }
+  }
+
+
+
+  void _searchPressed() {
+    setState(() {
+      if (this._searchIcon.icon == Icons.search) {
+        this._searchIcon = new Icon(Icons.close);
+        this._appBarTitle = new TextField(
+          controller: searchTextController,
+          decoration: new InputDecoration(
+              prefixIcon: new Icon(Icons.search),
+              hintText: 'Search...'
+          ),
+        );
+      } else {
+        this._searchIcon = new Icon(Icons.search);
+        this._appBarTitle = new Text('Products');
+      }
     });
   }
 }
 
-class ProductSearch extends SearchDelegate<String>{
 
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    // TODO: implement buildActions
-    return null;
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    // TODO: implement buildLeading
-    return null;
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    return null;
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    // TODO: implement buildSuggestions
-    return null;
-  }
-
-}
