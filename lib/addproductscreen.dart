@@ -147,6 +147,7 @@ class _addproductscreenState extends State<addproductscreen> {
                           )));
                 },
                 child: Text('Category'),),
+//              /*TODO REMOVE TEXTFIELD AND ADD JUST A TEXT FOR THE SHARED PREFERENCE*/
                 TextFormField(
                   controller: categoryController,
                   decoration: InputDecoration(labelText: 'Category'),
