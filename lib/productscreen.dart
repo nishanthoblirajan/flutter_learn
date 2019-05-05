@@ -43,6 +43,11 @@ class _productscreenState extends State<productscreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Products'),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.search), onPressed: (){
+
+          })
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -150,6 +155,33 @@ class _productscreenState extends State<productscreen> {
         ],
       );
     });
+  }
+}
+
+class ProductSearch extends SearchDelegate<String>{
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    // TODO: implement buildActions
+    return null;
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    // TODO: implement buildLeading
+    return null;
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    // TODO: implement buildResults
+    return null;
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    // TODO: implement buildSuggestions
+    return null;
   }
 
 }
