@@ -6,17 +6,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'DataClasses/CategoryDatabase.dart';
 
 class CategoryScreen extends StatefulWidget {
+  String categoryType;
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
+
+  CategoryScreen({Key key, @required this.categoryType}):super(key:key);
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
   String loadingScreen = 'Loading...';
 
+  String categoryType;
 
   TextEditingController searchTextController = new TextEditingController();
   @override
   initState() {
+    categoryType = widget.categoryType;
     searchTextController.text="";
     initSharedPrefs();
     super.initState();
@@ -35,7 +40,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: new Text('Category'),
+        title: new Text(categoryType+' Category'),
       ),
       body: Padding(padding: const EdgeInsets.all(12.0),
       child: Container(
@@ -55,15 +60,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         itemBuilder: (BuildContext context, int index) {
                           return new ListTile(
                             title: Text(_categoryDatabase[index].category_name),
-                            subtitle: Text(
-                                _categoryDatabase[index].category_type),
                           );
                         },
                         itemCount: snapshot.data.length,
                       );
                     }
                   },
-                  future: query(roCode,searchTextController.text),
+                  future: query(roCode,categoryType,searchTextController.text),
                 )),
           ],
         ),
@@ -72,16 +75,19 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   List<CategoryDatabase> _categoryDatabase = [];
-  query(String roCode,String textSearch) async {
+  query(String roCode,String categoryType,String textSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
     if(textSearch==""){
       queryBuilder =
       QueryBuilder<CategoryDatabase>(CategoryDatabase())
-        ..whereEqualTo(CategoryDatabase.roCode, roCode);
+        ..whereEqualTo(CategoryDatabase.roCode, roCode)
+      ..whereEqualTo(CategoryDatabase.categoryType, categoryType);
     }else{
       queryBuilder =
       QueryBuilder<CategoryDatabase>(CategoryDatabase())
-        ..whereEqualTo(CategoryDatabase.roCode, roCode)..whereEqualTo(CategoryDatabase.categoryName, textSearch);
+        ..whereEqualTo(CategoryDatabase.roCode, roCode)
+        ..whereEqualTo(CategoryDatabase.categoryType, categoryType)
+        ..whereEqualTo(CategoryDatabase.categoryName, textSearch);
     }
 
     ParseResponse apiResponse = await queryBuilder.query();

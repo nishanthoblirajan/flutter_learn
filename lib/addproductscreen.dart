@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
+import 'CategoryScreen.dart';
 import 'DataClasses/ProductDatabase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
@@ -136,11 +137,21 @@ class _addproductscreenState extends State<addproductscreen> {
                   decoration: InputDecoration(labelText: 'CGST'),
                   textInputAction: TextInputAction.next,
                 ),
+                RaisedButton(onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CategoryScreen(
+                            categoryType: 'Product',
+                          )));
+                },
+                child: Text('Category'),),
                 TextFormField(
                   controller: categoryController,
                   decoration: InputDecoration(labelText: 'Category'),
                   textInputAction: TextInputAction.next,
                 ),
+
                 buildRaisedButton()
 //                Expanded(
 //                  child: RaisedButton(
