@@ -126,15 +126,15 @@ class _productscreenState extends State<productscreen> {
     if(textSearch==""&&barCodeSearch==""){
       queryBuilder =
       QueryBuilder<ProductDatabase>(ProductDatabase())
-        ..whereEqualTo(ProductDatabase.roCode, '12345');
+        ..whereEqualTo(ProductDatabase.roCode, roCode);
     }else if(textSearch!=""&&barCodeSearch==""){
       queryBuilder =
       QueryBuilder<ProductDatabase>(ProductDatabase())
-        ..whereEqualTo(ProductDatabase.roCode, '12345')..whereContains(ProductDatabase.keyName, textSearch);
+        ..whereEqualTo(ProductDatabase.roCode, roCode)..whereContains(ProductDatabase.keyName, textSearch);
     }else if(textSearch==""&&barCodeSearch!=""){
       queryBuilder =
       QueryBuilder<ProductDatabase>(ProductDatabase())
-        ..whereEqualTo(ProductDatabase.roCode, '12345')..whereContains(ProductDatabase.keySKU, barCodeSearch);
+        ..whereEqualTo(ProductDatabase.roCode, roCode)..whereContains(ProductDatabase.keySKU, barCodeSearch);
     }else{
 
     }
@@ -158,7 +158,6 @@ class _productscreenState extends State<productscreen> {
       return _productDatabase;
     } else {
       setState(() {
-//        _productDatabase.clear();
         loadingScreen = "No data found";
       });
       print('Result: ${apiResponse.error.message}');
