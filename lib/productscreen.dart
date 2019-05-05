@@ -137,8 +137,6 @@ class _productscreenState extends State<productscreen> {
     }else{
 
     }
-
-
     ParseResponse apiResponse = await queryBuilder.query();
     if (apiResponse.success && apiResponse.result != null) {
       final List<ParseObject> listFromApi = apiResponse.result;
