@@ -22,9 +22,11 @@ class productscreen extends StatefulWidget {
 class _productscreenState extends State<productscreen> {
 
   TextEditingController searchTextController = new TextEditingController();
+  TextEditingController barcodeTextController = new TextEditingController();
   @override
   initState() {
     searchTextController.text="";
+    barcodeTextController.text="";
     initSharedPrefs();
     super.initState();
   }
@@ -106,7 +108,7 @@ class _productscreenState extends State<productscreen> {
                     );
                   }
                 },
-                future: query(roCode,searchTextController.text),
+                future: query(roCode,searchTextController.text,barcodeTextController.text),
               )),
             ],
           ),
@@ -118,16 +120,22 @@ class _productscreenState extends State<productscreen> {
   /*Necessary Functions*/
   List<ProductDatabase> _productDatabase = [];
 
-  query(String roCode,String search) async {
+  query(String roCode,String textSearch,String barCodeSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
-    if(search==""){
+    if(textSearch==""&&barCodeSearch==""){
       queryBuilder =
       QueryBuilder<ProductDatabase>(ProductDatabase())
         ..whereEqualTo(ProductDatabase.roCode, '12345');
-    }else{
+    }else if(textSearch!=""&&barCodeSearch==""){
       queryBuilder =
       QueryBuilder<ProductDatabase>(ProductDatabase())
-        ..whereEqualTo(ProductDatabase.roCode, '12345')..whereContains(ProductDatabase.keyName, search);
+        ..whereEqualTo(ProductDatabase.roCode, '12345')..whereContains(ProductDatabase.keyName, textSearch)..whereContains(ProductDatabase.keySKU, textSearch);
+    }else if(textSearch==""&&barCodeSearch!=""){
+      queryBuilder =
+      QueryBuilder<ProductDatabase>(ProductDatabase())
+        ..whereEqualTo(ProductDatabase.roCode, '12345')..whereContains(ProductDatabase.keySKU, textSearch);
+    }else{
+
     }
 
 
@@ -189,24 +197,11 @@ class _productscreenState extends State<productscreen> {
     try {
       String barcode = await BarcodeScanner.scan();
       setState(() {
-        searchTextController.text = barcode;
-        if (this._searchIcon.icon == Icons.search) {
-          this._searchIcon = new Icon(Icons.close);
-          this._appBarTitle = new TextField(
-            controller: searchTextController,
-            decoration: new InputDecoration(
-                prefixIcon: new Icon(Icons.search),
-                hintText: 'Search...'
-            ),
-          );
-        } else {
-          this._searchIcon = new Icon(Icons.search);
-          this._appBarTitle = new Text('Products');
-        }
+        barcodeTextController.text = barcode;
       });
+      Fluttertoast.showToast(msg: "Searching Barcode "+barcode);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
-
       } else {
       }
     } on FormatException {
