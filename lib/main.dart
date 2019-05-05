@@ -8,16 +8,15 @@ import 'ApplicationConstants.dart';
 import 'saleinvoice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(
-    MaterialApp(
+void main() => runApp(MaterialApp(
       title: "Flutter testing",
       debugShowCheckedModeBanner: false,
       home: MyApp(),
       routes: <String, WidgetBuilder>{
-        '/myapp':(context)=>MyApp(),
-        '/productscreen':(context)=>productscreen(),
-        '/addproductscreen':(context)=>addproductscreen(),
-        '/saleinvoice':(context)=>saleinvoice()
+        '/myapp': (context) => MyApp(),
+        '/productscreen': (context) => productscreen(),
+        '/addproductscreen': (context) => addproductscreen(),
+        '/saleinvoice': (context) => saleinvoice()
       },
     ));
 
@@ -26,59 +25,54 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-
-
 class _MyAppState extends State<MyApp> {
-    SharedPreferences sharedPreferences;
-    String roCode;
+  String databaseConnectionStatus = "";
+  SharedPreferences sharedPreferences;
+  String roCode;
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: AppBar(
-          title: Text('LSSM'),
-        ),
-        body: buildContainer(),
-        drawer: buildDrawer(context),
-      );
+      appBar: AppBar(
+        title: Text('LSSM'),
+      ),
+      body: buildContainer(),
+      drawer: buildDrawer(context),
+    );
   }
 
-
   @override
-  initState(){
+  initState() {
     initParse();
     _setSharedPreference();
     super.initState();
   }
-    initParse() async {
-      Parse().initialize(ApplicationConstants.keyParseApplicationId,
-          ApplicationConstants.keyParseServerUrl,
-          masterKey: ApplicationConstants.keyParseCustomerKey,
-          clientKey: ApplicationConstants.keyParseCustomerKey,
-          debug: true);
-      var response = await Parse().healthCheck();
-      if (response.success) {
-        print("Success");
-      } else {
-        print("Server health check failed");
-      }
-    }
 
+  initParse() async {
+    Parse().initialize(ApplicationConstants.keyParseApplicationId,
+        ApplicationConstants.keyParseServerUrl,
+        masterKey: ApplicationConstants.keyParseMasterKey,
+        clientKey: ApplicationConstants.keyParseCustomerKey,
+        debug: true);
+    var response = await Parse().healthCheck();
+    if (response.success) {
+        print("Success");
+    } else {
+        print("Server health check failed");
+    }
+  }
 
   Widget buildContainer() {
     return new Container(
-      child: Text('RO Code '+roCode),
+      child: Text(databaseConnectionStatus + ' ----> RO Code ' + roCode),
     );
   }
 
-  _setSharedPreference() async{
+  _setSharedPreference() async {
     sharedPreferences = await SharedPreferences.getInstance();
     await sharedPreferences.setString('ro_code', '12345');
     setState(() {
       roCode = sharedPreferences.getString('ro_code');
     });
   }
-
-
 }
-
-
