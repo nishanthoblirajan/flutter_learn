@@ -65,6 +65,8 @@ class _productscreenState extends State<productscreen> {
                 Expanded(
                   child: RaisedButton(
                     onPressed: () {
+                      /*Set shared preference product category to ''*/
+                      sharedPreferences.setString('Product_category', '');
                       Navigator.pushNamed(context, '/addproductscreen');
                     },
                     child: Text('Add New Product'),

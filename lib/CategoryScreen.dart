@@ -62,7 +62,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             title: Text(_categoryDatabase[index].category_name),
                             onTap: (){
                               sharedPreferences.setString(categoryType+"_category", _categoryDatabase[index].category_name);
-                              Navigator.pop(context,true);
+                              Navigator.of(context).pop({'category_selection':_categoryDatabase[index].category_name});
                             },
                           );
                         },

@@ -34,7 +34,6 @@ class _addproductscreenState extends State<addproductscreen> {
 
   @override
   initState() {
-    initSharedPrefs();
     if (widget.receivedProductDatabase != null) {
       operationType = "Edit";
       productDatabase = widget.receivedProductDatabase;
@@ -50,6 +49,7 @@ class _addproductscreenState extends State<addproductscreen> {
       cgstController.text = productDatabase.cgst;
       categoryController.text = productDatabase.categoryName;
     }
+    initSharedPrefs();
     super.initState();
   }
 
@@ -60,7 +60,6 @@ class _addproductscreenState extends State<addproductscreen> {
     sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
       roCode = sharedPreferences.getString('ro_code');
-      categoryController.text=sharedPreferences.getString('Product_category');
     });
   }
 
@@ -138,7 +137,19 @@ class _addproductscreenState extends State<addproductscreen> {
                   decoration: InputDecoration(labelText: 'CGST'),
                   textInputAction: TextInputAction.next,
                 ),
-                RaisedButton(onPressed: () {
+                RaisedButton(onPressed: () async {
+                   /*NEW TODO*/
+                  Map results =  await Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => CategoryScreen(
+                        categoryType: 'Product',
+                      )));
+
+                  if (results != null && results.containsKey('category_selection')) {
+                    setState(() {
+                      categoryController.text = results['category_selection'];
+                    });
+                  }
+                  /*old*/
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -170,7 +181,9 @@ class _addproductscreenState extends State<addproductscreen> {
       ),
     );
   }
+  Future _buttonTapped() async {
 
+  }
   Widget buildRaisedButton() {
     Widget deleteButton = RaisedButton(onPressed: () {
       deleteProductFromDatabase(productDatabase);
