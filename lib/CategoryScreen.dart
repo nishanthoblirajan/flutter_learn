@@ -1,16 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hello_world/AddCategoryScreen.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'DataClasses/CategoryDatabase.dart';
 
 class CategoryScreen extends StatefulWidget {
   String categoryType;
+
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
 
-  CategoryScreen({Key key, @required this.categoryType}):super(key:key);
+  CategoryScreen({Key key, @required this.categoryType}) : super(key: key);
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
@@ -19,13 +21,15 @@ class _CategoryScreenState extends State<CategoryScreen> {
   String categoryType;
 
   TextEditingController searchTextController = new TextEditingController();
+
   @override
   initState() {
     categoryType = widget.categoryType;
-    searchTextController.text="";
+    searchTextController.text = "";
     initSharedPrefs();
     super.initState();
   }
+
   SharedPreferences sharedPreferences;
   String roCode;
 
@@ -39,15 +43,28 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: new Text(categoryType+' Category'),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          /*TODO add new category name*/
+          Navigator.of(context).push(new MaterialPageRoute(
+              builder: (context) => AddCategoryScreen(
+                categoryType: 'Product',
+              )));
+        },
+        icon: Icon(Icons.add),
+        label: Text('Add'),
       ),
-      body: Padding(padding: const EdgeInsets.all(12.0),
-      child: Container(
-        child: new Column(
-          children: <Widget>[
-            Expanded(
-                child: new FutureBuilder(
+      appBar: AppBar(
+        title: new Text(categoryType + ' Category'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Container(
+          child: new Column(
+            children: <Widget>[
+              RefreshIndicator(
+                child: Expanded(
+                    child: new FutureBuilder(
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.data == null) {
                       return Container(
@@ -60,9 +77,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         itemBuilder: (BuildContext context, int index) {
                           return new ListTile(
                             title: Text(_categoryDatabase[index].category_name),
-                            onTap: (){
-                              sharedPreferences.setString(categoryType+"_category", _categoryDatabase[index].category_name);
-                              Navigator.of(context).pop({'category_selection':_categoryDatabase[index].category_name});
+                            onTap: () {
+                              sharedPreferences.setString(
+                                  categoryType + "_category",
+                                  _categoryDatabase[index].category_name);
+                              Navigator.of(context).pop({
+                                'category_selection':
+                                    _categoryDatabase[index].category_name
+                              });
                             },
                           );
                         },
@@ -70,25 +92,26 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       );
                     }
                   },
-                  future: query(roCode,categoryType,searchTextController.text),
+                  future: query(roCode, categoryType, searchTextController.text),
                 )),
-          ],
+              ),
+            ],
+          ),
         ),
-      ),),
+      ),
     );
   }
 
   List<CategoryDatabase> _categoryDatabase = [];
-  query(String roCode,String categoryType,String textSearch) async {
+
+  query(String roCode, String categoryType, String textSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
-    if(textSearch==""){
-      queryBuilder =
-      QueryBuilder<CategoryDatabase>(CategoryDatabase())
+    if (textSearch == "") {
+      queryBuilder = QueryBuilder<CategoryDatabase>(CategoryDatabase())
         ..whereEqualTo(CategoryDatabase.roCode, roCode)
-      ..whereEqualTo(CategoryDatabase.categoryType, categoryType);
-    }else{
-      queryBuilder =
-      QueryBuilder<CategoryDatabase>(CategoryDatabase())
+        ..whereEqualTo(CategoryDatabase.categoryType, categoryType);
+    } else {
+      queryBuilder = QueryBuilder<CategoryDatabase>(CategoryDatabase())
         ..whereEqualTo(CategoryDatabase.roCode, roCode)
         ..whereEqualTo(CategoryDatabase.categoryType, categoryType)
         ..whereEqualTo(CategoryDatabase.categoryName, textSearch);
@@ -99,13 +122,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
       final List<ParseObject> listFromApi = apiResponse.result;
       setState(() {
         _categoryDatabase = new List();
-
       });
       for (int i = 0; i < listFromApi.length; i++) {
         print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
         CategoryDatabase categoryDatabase =
-        new CategoryDatabase().fromJson(output);
+            new CategoryDatabase().fromJson(output);
         print(categoryDatabase.category_name);
         setState(() {
           _categoryDatabase.add(categoryDatabase);
@@ -119,6 +141,4 @@ class _CategoryScreenState extends State<CategoryScreen> {
       print('Result: ${apiResponse.error.message}');
     }
   }
-
-
 }
