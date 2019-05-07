@@ -43,15 +43,50 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+
+    var futurebuilder = new FutureBuilder(
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.data == null) {
+          return Container(
+            child: Center(
+                child: Text(loadingScreen)
+            ),
+          );
+        } else {
+          return ListView.builder(
+            itemBuilder: (BuildContext context, int index) {
+              return new ListTile(
+                title: Text(_categoryDatabase[index].category_name),
+                onTap: () {
+                  sharedPreferences.setString(
+                      categoryType + "_category",
+                      _categoryDatabase[index].category_name);
+                  Navigator.of(context).pop({
+                    'category_selection':
+                    _categoryDatabase[index].category_name
+                  });
+                },
+              );
+            },
+            itemCount: snapshot.data.length,
+          );
+        }
+      },
+      future: query(roCode, categoryType, searchTextController.text),
+    );
+
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
+        onPressed: () async {
           /*TODO add new category name*/
-          Navigator.of(context).push(new MaterialPageRoute(
+         Navigator.of(context).push(new MaterialPageRoute(
               builder: (context) => AddCategoryScreen(
-                categoryType: 'Product',
-                categoryList: _categoryDatabase,
-              )));
+                    categoryType: 'Product',
+                    categoryList: _categoryDatabase,
+                  )));
+
         },
         icon: Icon(Icons.add),
         label: Text('Add'),
@@ -65,42 +100,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
           child: new Column(
             children: <Widget>[
               Expanded(
-                  child: new FutureBuilder(
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.data == null) {
-                    return Container(
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        return new ListTile(
-                          title: Text(_categoryDatabase[index].category_name),
-                          onTap: () {
-                            sharedPreferences.setString(
-                                categoryType + "_category",
-                                _categoryDatabase[index].category_name);
-                            Navigator.of(context).pop({
-                              'category_selection':
-                                  _categoryDatabase[index].category_name
-                            });
-                          },
-                        );
-                      },
-                      itemCount: snapshot.data.length,
-                    );
-                  }
-                },
-                future: query(roCode, categoryType, searchTextController.text),
-              )),
+                  child: futurebuilder),
             ],
           ),
         ),
       ),
     );
   }
+
 
   List<CategoryDatabase> _categoryDatabase = [];
 
@@ -124,7 +131,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         _categoryDatabase = new List();
       });
       for (int i = 0; i < listFromApi.length; i++) {
-        print(listFromApi[i].toString());
+//        print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
         CategoryDatabase categoryDatabase =
             new CategoryDatabase().fromJson(output);
@@ -134,9 +141,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
         });
       }
       return _categoryDatabase;
-    } else if(apiResponse.result==null){
+    } else{
       setState(() {
-//        loadingScreen = "No data found";
+        loadingScreen = apiResponse.error.toString();
       });
       print('Result: ${apiResponse.error.message}');
     }

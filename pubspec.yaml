@@ -19,7 +19,7 @@ environment:
 dependencies:
   fluttertoast: ^2.1.4
   barcode_scan: 0.0.5
-  parse_server_sdk: ^1.0.12
+  parse_server_sdk: ^1.0.21
   giffy_dialog: 1.3.0
   shared_preferences: ^0.5.2
 
