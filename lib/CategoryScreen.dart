@@ -49,6 +49,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           Navigator.of(context).push(new MaterialPageRoute(
               builder: (context) => AddCategoryScreen(
                 categoryType: 'Product',
+                categoryList: _categoryDatabase,
               )));
         },
         icon: Icon(Icons.add),
@@ -62,39 +63,37 @@ class _CategoryScreenState extends State<CategoryScreen> {
         child: Container(
           child: new Column(
             children: <Widget>[
-              RefreshIndicator(
-                child: Expanded(
-                    child: new FutureBuilder(
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.data == null) {
-                      return Container(
-                        child: Center(
-                          child: Text(loadingScreen),
-                        ),
-                      );
-                    } else {
-                      return ListView.builder(
-                        itemBuilder: (BuildContext context, int index) {
-                          return new ListTile(
-                            title: Text(_categoryDatabase[index].category_name),
-                            onTap: () {
-                              sharedPreferences.setString(
-                                  categoryType + "_category",
-                                  _categoryDatabase[index].category_name);
-                              Navigator.of(context).pop({
-                                'category_selection':
-                                    _categoryDatabase[index].category_name
-                              });
-                            },
-                          );
-                        },
-                        itemCount: snapshot.data.length,
-                      );
-                    }
-                  },
-                  future: query(roCode, categoryType, searchTextController.text),
-                )),
-              ),
+              Expanded(
+                  child: new FutureBuilder(
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.data == null) {
+                    return Container(
+                      child: Center(
+                        child: Text(loadingScreen),
+                      ),
+                    );
+                  } else {
+                    return ListView.builder(
+                      itemBuilder: (BuildContext context, int index) {
+                        return new ListTile(
+                          title: Text(_categoryDatabase[index].category_name),
+                          onTap: () {
+                            sharedPreferences.setString(
+                                categoryType + "_category",
+                                _categoryDatabase[index].category_name);
+                            Navigator.of(context).pop({
+                              'category_selection':
+                                  _categoryDatabase[index].category_name
+                            });
+                          },
+                        );
+                      },
+                      itemCount: snapshot.data.length,
+                    );
+                  }
+                },
+                future: query(roCode, categoryType, searchTextController.text),
+              )),
             ],
           ),
         ),
@@ -134,7 +133,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         });
       }
       return _categoryDatabase;
-    } else {
+    } else if(apiResponse.result==null){
       setState(() {
         loadingScreen = "No data found";
       });
