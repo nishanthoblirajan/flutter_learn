@@ -27,6 +27,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     categoryType = widget.categoryType;
     searchTextController.text = "";
     initSharedPrefs();
+    query(roCode, categoryType, searchTextController.text);
     super.initState();
   }
 
@@ -69,7 +70,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   if (snapshot.data == null) {
                     return Container(
                       child: Center(
-                        child: Text(loadingScreen),
+                        child: CircularProgressIndicator(),
                       ),
                     );
                   } else {
@@ -135,7 +136,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
       return _categoryDatabase;
     } else if(apiResponse.result==null){
       setState(() {
-        loadingScreen = "No data found";
+//        loadingScreen = "No data found";
       });
       print('Result: ${apiResponse.error.message}');
     }

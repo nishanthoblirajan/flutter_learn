@@ -50,6 +50,14 @@ class _productscreenState extends State<productscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          sharedPreferences.setString('Product_category', '');
+          Navigator.pushNamed(context, '/addproductscreen');
+        },
+        icon: Icon(Icons.add),
+        label: Text('Add'),
+      ),
       appBar: AppBar(
         title: _appBarTitle,
         actions: <Widget>[
@@ -62,16 +70,6 @@ class _productscreenState extends State<productscreen> {
           child: new Column(
             children: <Widget>[
               Row(children: <Widget>[
-                Expanded(
-                  child: RaisedButton(
-                    onPressed: () {
-                      /*Set shared preference product category to ''*/
-                      sharedPreferences.setString('Product_category', '');
-                      Navigator.pushNamed(context, '/addproductscreen');
-                    },
-                    child: Text('Add New Product'),
-                  ),
-                ),
                 Expanded(
                   child: RaisedButton(
                     onPressed: () {
@@ -88,7 +86,7 @@ class _productscreenState extends State<productscreen> {
                   if (snapshot.data == null) {
                     return Container(
                       child: Center(
-                        child: Text(loadingScreen),
+                        child: CircularProgressIndicator(),
                       ),
                     );
                   } else {

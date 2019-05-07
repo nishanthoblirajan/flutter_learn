@@ -53,10 +53,10 @@ class _addproductscreenState extends State<addproductscreen> {
     super.initState();
   }
 
-
   SharedPreferences sharedPreferences;
   String roCode;
-  initSharedPrefs() async{
+
+  initSharedPrefs() async {
     sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
       roCode = sharedPreferences.getString('ro_code');
@@ -137,37 +137,26 @@ class _addproductscreenState extends State<addproductscreen> {
                   decoration: InputDecoration(labelText: 'CGST'),
                   textInputAction: TextInputAction.next,
                 ),
-                RaisedButton(onPressed: () async {
-                   /*NEW TODO*/
-                  Map results =  await Navigator.of(context).push(new MaterialPageRoute(
-                      builder: (context) => CategoryScreen(
-                        categoryType: 'Product',
-                      )));
+                RaisedButton(
+                  onPressed: () async {
+                    /*NEW TODO*/
+                    Map results =
+                        await Navigator.of(context).push(new MaterialPageRoute(
+                            builder: (context) => CategoryScreen(
+                                  categoryType: 'Product',
+                                )));
 
-                  if (results != null && results.containsKey('category_selection')) {
-                    setState(() {
-                      categoryController.text = results['category_selection'];
-                    });
-                  }
-
-                },
-                child: Text('Category'),),
-//              /*TODO REMOVE TEXTFIELD AND ADD JUST A TEXT FOR THE SHARED PREFERENCE*/
-                TextFormField(
-                  controller: categoryController,
-                  decoration: InputDecoration(labelText: 'Category'),
-                  textInputAction: TextInputAction.next,
+                    if (results != null &&
+                        results.containsKey('category_selection')) {
+                      setState(() {
+                        categoryController.text = results['category_selection'];
+                      });
+                    }
+                  },
+                  child: Text('Category'),
                 ),
-
-                buildRaisedButton()
-//                Expanded(
-//                  child: RaisedButton(
-//                    onPressed: () {
-//                      addProductToDatabase();
-//                    },
-//                    child: Text('Add Product'),
-//                  ),
-//                ),
+                Text(categoryController.text),
+                buildRaisedButton(context)
               ],
             ),
           ),
@@ -175,14 +164,34 @@ class _addproductscreenState extends State<addproductscreen> {
       ),
     );
   }
-  Future _buttonTapped() async {
 
-  }
-  Widget buildRaisedButton() {
-    Widget deleteButton = RaisedButton(onPressed: () {
-      deleteProductFromDatabase(productDatabase);
-    },
-      child: Text('Delete Product'),);
+  Widget buildRaisedButton(BuildContext context) {
+    Widget deleteButton = RaisedButton(
+      onPressed: () {
+        showDialog(context: context,builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text("Do you want to delete?"),
+            content: new Text("This cannot be undone"),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("No"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Yes"),
+                onPressed: () {
+                  deleteProductFromDatabase(productDatabase);
+                },
+              ),
+            ],
+          );
+        });
+      },
+      child: Text('Delete Product'),
+    );
 
     Widget normalButton = RaisedButton(
       onPressed: () {
@@ -193,16 +202,11 @@ class _addproductscreenState extends State<addproductscreen> {
 
     if (widget.receivedProductDatabase != null) {
       return Column(
-        children: <Widget>[
-          normalButton,
-          deleteButton
-        ],
+        children: <Widget>[normalButton, deleteButton],
       );
     } else {
       return Column(
-        children: <Widget>[
-          normalButton
-        ],
+        children: <Widget>[normalButton],
       );
     }
   }
@@ -229,25 +233,20 @@ class _addproductscreenState extends State<addproductscreen> {
     }
   }
 
-
-  void addOrUpdateProduct(){
-    if(widget.receivedProductDatabase!=null){
+  void addOrUpdateProduct() {
+    if (widget.receivedProductDatabase != null) {
       updateProductToDatabase(widget.receivedProductDatabase);
-    }else{
+    } else {
       createProductInDatabase();
-
     }
   }
-
-
-
 
   /*CRUD Operation Starts*/
   /*Create*/
   Future createProductInDatabase() async {
     ProductDatabase productDatabase = new ProductDatabase();
     productDatabase.name = nameController.text;
-    productDatabase.ro_code=roCode;
+    productDatabase.ro_code = roCode;
     productDatabase.sku = barcodeController.text;
     productDatabase.salePrice = salePriceController.text;
     productDatabase.purchasePrice = purchasePriceController.text;
@@ -264,13 +263,13 @@ class _addproductscreenState extends State<addproductscreen> {
           msg: 'Product Saved', backgroundColor: Colors.blue);
       Navigator.pop(context);
     } else {
-      Fluttertoast.showToast(
-          msg: 'Error', backgroundColor: Colors.red);
+      Fluttertoast.showToast(msg: 'Error', backgroundColor: Colors.red);
     }
   }
 
   /*Delete*/
-  Future deleteProductFromDatabase(ProductDatabase receivedProductDatabase) async {
+  Future deleteProductFromDatabase(
+      ProductDatabase receivedProductDatabase) async {
     String objectID = receivedProductDatabase.get('objectId');
     print('Delete ' + objectID);
     ProductDatabase productDatabase = new ProductDatabase();
@@ -282,13 +281,13 @@ class _addproductscreenState extends State<addproductscreen> {
           msg: 'Product Deleted', backgroundColor: Colors.blue);
       Navigator.pop(context, true);
     } else {
-      Fluttertoast.showToast(
-          msg: 'Error', backgroundColor: Colors.red);
+      Fluttertoast.showToast(msg: 'Error', backgroundColor: Colors.red);
     }
   }
 
   /*Update*/
-  Future updateProductToDatabase(ProductDatabase receivedProductDatabase) async {
+  Future updateProductToDatabase(
+      ProductDatabase receivedProductDatabase) async {
     Fluttertoast.showToast(msg: "Editing");
     String objectID = receivedProductDatabase.get('objectId');
     print('ObjectID: ' + objectID);
@@ -311,11 +310,7 @@ class _addproductscreenState extends State<addproductscreen> {
           msg: 'Product Updated', backgroundColor: Colors.blue);
       Navigator.pop(context);
     } else {
-      Fluttertoast.showToast(
-          msg: 'Error', backgroundColor: Colors.red);
+      Fluttertoast.showToast(msg: 'Error', backgroundColor: Colors.red);
     }
   }
-
 }
-
-
