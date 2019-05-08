@@ -13,14 +13,17 @@ import 'package:fluttertoast/fluttertoast.dart';
 class CategoryScreen extends StatefulWidget {
   String categoryType;
 
+  bool isAdmin;
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
 
-  CategoryScreen({Key key, @required this.categoryType}) : super(key: key);
+  CategoryScreen({Key key, @required this.categoryType, this.isAdmin}) : super(key: key);
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
   String categoryType;
+
+  bool isAdmin;
 
   TextEditingController searchTextController = new TextEditingController();
 
@@ -29,6 +32,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   /*Use normal listview after setting the query in initState*/
   @override
   initState() {
+    isAdmin = widget.isAdmin;
     categoryType = widget.categoryType;
     searchTextController.text = "";
     initSharedPrefs();
@@ -126,9 +130,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
         trailing: IconButton(
           icon: Icon(Icons.delete),
           onPressed: () {
-            setState(() {
-              deleteCategoryFromDatabase(_categoryDatabase[index]);
-            });
+            if(isAdmin){
+                deleteCategoryFromDatabase(_categoryDatabase[index]);
+            }else{
+              Fluttertoast.showToast(msg: 'Require Admin');
+            }
+
           },
         ),
         title: Text(_categoryDatabase[index].category_name),

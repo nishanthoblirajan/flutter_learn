@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'CategoryScreen.dart';
+
 Widget buildDrawer(BuildContext context) => Drawer(
       child: ListView(
         children: <Widget>[
@@ -7,7 +9,7 @@ Widget buildDrawer(BuildContext context) => Drawer(
           buildMenuItem(context, 'Dashboard', 'myapp'),
           buildMenuItem(context, 'Product', 'productscreen'),
           buildHeadingMenu('Sale'),
-          buildMenuItem(context,'Invoice','saleinvoice'),
+          buildMenuItem(context, 'Invoice', 'saleinvoice'),
           buildMenuItemWithout('Payment'),
           buildHeadingMenu('Purchase'),
           buildMenuItemWithout('Invoice'),
@@ -19,6 +21,18 @@ Widget buildDrawer(BuildContext context) => Drawer(
           buildHeadingMenu('Others'),
           buildMenuItemWithout('Banking'),
           buildHeadingMenu('Admin'),
+          Container(
+            child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
+                title: Text('Category'),
+                onTap: () {
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => CategoryScreen(
+                            categoryType: 'Product',
+                            isAdmin: true,
+                          )));
+                }),
+          ),
           buildMenuItemWithout('Report'),
           buildMenuItemWithout('Staff List'),
           buildMenuItemWithout('Change Password'),
@@ -45,8 +59,7 @@ Widget buildMenuItemWithout(String name) {
     child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
         title: Text(name),
-        onTap: () {
-        }),
+        onTap: () {}),
   );
 }
 

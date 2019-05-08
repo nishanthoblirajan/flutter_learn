@@ -144,6 +144,7 @@ class _addproductscreenState extends State<addproductscreen> {
                         await Navigator.of(context).push(new MaterialPageRoute(
                             builder: (context) => CategoryScreen(
                                   categoryType: 'Product',
+                              isAdmin: false,
                                 )));
 
                     if (results != null &&
