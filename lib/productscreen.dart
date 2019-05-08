@@ -49,13 +49,16 @@ class _productscreenState extends State<productscreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    /*change only the future*/
     var futurebuilder = new FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         print('Connection State: ' + snapshot.connectionState.toString());
         if (snapshot.hasData) {
           if (snapshot.data != null) {
             print('Im Inside');
-            return ListView(children: _getData(snapshot));
+            return ListView(children:
+            _getData(snapshot));
           } else {
             return Center(
               child: new CircularProgressIndicator(),
@@ -71,24 +74,7 @@ class _productscreenState extends State<productscreen> {
           _query(roCode, searchTextController.text, barcodeTextController.text),
     );
 
-    List<Widget> _getData(AsyncSnapshot snapshot) {
-      ParseResponse apiResponse = snapshot.data;
-      if (apiResponse.success && apiResponse.result != null) {
-        final List<ParseObject> listFromApi = apiResponse.result;
-        _productDatabase = new List();
-        for (int i = 0; i < listFromApi.length; i++) {
-          print(listFromApi[i].toString());
-          Map output = json.decode(listFromApi[i].toString());
-          ProductDatabase productDatabase =
-              new ProductDatabase().fromJson(output);
-          print(productDatabase.name);
-          _productDatabase.add(productDatabase);
-        }
-      }
 
-      List<Widget> widgetLists = new List();
-      for(int index=0;index<)
-    }
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
@@ -127,36 +113,7 @@ class _productscreenState extends State<productscreen> {
                 ],
               ),
               Expanded(
-                  child: new FutureBuilder(
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.data == null) {
-                    return Container(
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        return new ListTile(
-                          onTap: () =>
-                              _showDialog(context, _productDatabase[index]),
-                          title: Text(_productDatabase[index].name),
-                          subtitle: Text(" Quantity: " +
-                              _productDatabase[index].quantity +
-                              " SKU: " +
-                              _productDatabase[index].sku),
-                          trailing: Text(
-                              "\u20B9" + _productDatabase[index].salePrice),
-                        );
-                      },
-                      itemCount: snapshot.data.length,
-                    );
-                  }
-                },
-                future: _query(roCode, searchTextController.text,
-                    barcodeTextController.text),
-              )),
+                  child: futurebuilder),
             ],
           ),
         ),
@@ -165,7 +122,40 @@ class _productscreenState extends State<productscreen> {
   }
 
   /*Necessary Functions*/
-  List<ProductDatabase> _productDatabase;
+  List<ProductDatabase> _productDatabase = [];
+
+  List<Widget> _getData(AsyncSnapshot snapshot) {
+    ParseResponse apiResponse = snapshot.data;
+    if (apiResponse.success && apiResponse.result != null) {
+      final List<ParseObject> listFromApi = apiResponse.result;
+      _productDatabase = new List();
+      for (int i = 0; i < listFromApi.length; i++) {
+        print(listFromApi[i].toString());
+        Map output = json.decode(listFromApi[i].toString());
+        ProductDatabase productDatabase =
+        new ProductDatabase().fromJson(output);
+        print(productDatabase.name);
+        _productDatabase.add(productDatabase);
+      }
+    }
+
+    List<Widget> widgetLists = new List();
+    for (int index = 0; index < _productDatabase.length; index++) {
+      widgetLists.add(ListTile(
+        onTap: () =>
+            _showDialog(context, _productDatabase[index]),
+        title: Text(_productDatabase[index].name),
+        subtitle: Text(" Quantity: " +
+            _productDatabase[index].quantity +
+            " SKU: " +
+            _productDatabase[index].sku),
+        trailing: Text(
+            "\u20B9" + _productDatabase[index].salePrice),
+      ));
+    }
+    return widgetLists;
+  }
+
 
   _query(String roCode, String textSearch, String barCodeSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
@@ -181,7 +171,6 @@ class _productscreenState extends State<productscreen> {
         ..whereEqualTo(ProductDatabase.roCode, roCode)
         ..whereContains(ProductDatabase.keySKU, barCodeSearch);
     }
-
     return queryBuilder.query();
   }
 
