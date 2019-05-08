@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'DataClasses/CategoryDatabase.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+
+
 class CategoryScreen extends StatefulWidget {
   String categoryType;
 
@@ -159,6 +161,7 @@ _query(String roCode, String categoryType, String textSearch) async {
   }
   return queryBuilder.query();
 }
+
 /*Delete*/
 Future deleteCategoryFromDatabase(
     CategoryDatabase receivedCategoryDatabase) async {
