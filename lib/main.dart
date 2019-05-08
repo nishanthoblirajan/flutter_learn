@@ -6,6 +6,7 @@ import 'package:hello_world/addproductscreen.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'ApplicationConstants.dart';
 import 'CategoryScreen.dart';
+import 'POS.dart';
 import 'saleinvoice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,7 +20,8 @@ void main() => runApp(MaterialApp(
         '/productscreen': (context) => productscreen(),
         '/addproductscreen': (context) => addproductscreen(),
         '/saleinvoice': (context) => saleinvoice(),
-        '/categoryscreen':(context)=>CategoryScreen()
+        '/categoryscreen':(context)=>CategoryScreen(),
+        '/pos':(context)=>POS()
       },
     ));
 

@@ -7,6 +7,7 @@ Widget buildDrawer(BuildContext context) => Drawer(
         children: <Widget>[
           buildHeadingMenu('Menu'),
           buildMenuItem(context, 'Dashboard', 'myapp'),
+          buildMenuItem(context, 'POS', 'pos'),
           buildMenuItem(context, 'Product', 'productscreen'),
           buildHeadingMenu('Sale'),
           buildMenuItem(context, 'Invoice', 'saleinvoice'),
