@@ -44,49 +44,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
 
-  List<Widget> _getData(AsyncSnapshot snapshot) {
-    ParseResponse apiResponse = snapshot.data;
-    if (apiResponse.success && apiResponse.result != null) {
-      final List<ParseObject> listFromApi = apiResponse.result;
-        _categoryDatabase = new List();
-      for (int i = 0; i < listFromApi.length; i++) {
-        Map output = json.decode(listFromApi[i].toString());
-        CategoryDatabase categoryDatabase =
-        new CategoryDatabase().fromJson(output);
-        print(categoryDatabase.category_name);
-          _categoryDatabase.add(categoryDatabase);
-      }
-    }
-
-    List<Widget> widgetLists = new List();
-    for (int index = 0; index < _categoryDatabase.length; index++) {
-      widgetLists.add(ListTile(
-        trailing: IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () {
-            setState(() {
-              deleteCategoryFromDatabase(_categoryDatabase[index]);
-            });
-          },
-        ),
-        title: Text(_categoryDatabase[index].category_name),
-        onTap: () {
-          sharedPreferences.setString(categoryType + "_category",
-              _categoryDatabase[index].category_name);
-          Navigator.of(context).pop({
-            'category_selection':
-            _categoryDatabase[index].category_name
-          });
-        },
-      ));
-    }
-    return widgetLists;
-  }
-
 
   @override
   Widget build(BuildContext context) {
-
 
     var futurebuilder = new FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -141,6 +101,47 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   List<CategoryDatabase> _categoryDatabase = [];
+
+
+
+  List<Widget> _getData(AsyncSnapshot snapshot) {
+    ParseResponse apiResponse = snapshot.data;
+    if (apiResponse.success && apiResponse.result != null) {
+      final List<ParseObject> listFromApi = apiResponse.result;
+      _categoryDatabase = new List();
+      for (int i = 0; i < listFromApi.length; i++) {
+        Map output = json.decode(listFromApi[i].toString());
+        CategoryDatabase categoryDatabase =
+        new CategoryDatabase().fromJson(output);
+        print(categoryDatabase.category_name);
+        _categoryDatabase.add(categoryDatabase);
+      }
+    }
+
+    List<Widget> widgetLists = new List();
+    for (int index = 0; index < _categoryDatabase.length; index++) {
+      widgetLists.add(ListTile(
+        trailing: IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: () {
+            setState(() {
+              deleteCategoryFromDatabase(_categoryDatabase[index]);
+            });
+          },
+        ),
+        title: Text(_categoryDatabase[index].category_name),
+        onTap: () {
+          sharedPreferences.setString(categoryType + "_category",
+              _categoryDatabase[index].category_name);
+          Navigator.of(context).pop({
+            'category_selection':
+            _categoryDatabase[index].category_name
+          });
+        },
+      ));
+    }
+    return widgetLists;
+  }
 
 }
 
