@@ -10,7 +10,7 @@ Widget buildDrawer(BuildContext context) => Drawer(
           buildMenuItem(context, 'POS', 'pos'),
           buildMenuItem(context, 'Product', 'productscreen'),
           buildHeadingMenu('Sale'),
-          buildMenuItem(context, 'Invoice', 'saleinvoice'),
+          buildMenuItem(context, 'Invoice', 'invoicescreen'),
           buildMenuItemWithout('Payment'),
           buildHeadingMenu('Purchase'),
           buildMenuItemWithout('Invoice'),
