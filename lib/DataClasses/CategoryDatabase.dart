@@ -22,4 +22,7 @@ class CategoryDatabase extends ParseObject implements ParseCloneable{
   String get category_type => get<String>(categoryType);
   set category_type(String category_type) => set<String>(categoryType, category_type);
 
+
+
+
 }

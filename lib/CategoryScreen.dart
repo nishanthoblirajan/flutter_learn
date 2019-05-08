@@ -142,42 +142,22 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   List<CategoryDatabase> _categoryDatabase = [];
 
-  _query(String roCode, String categoryType, String textSearch) async {
-    QueryBuilder<ParseObject> queryBuilder;
-    if (textSearch == "") {
-      queryBuilder = QueryBuilder<CategoryDatabase>(CategoryDatabase())
-        ..whereEqualTo(CategoryDatabase.roCode, roCode)..whereEqualTo(
-            CategoryDatabase.categoryType, categoryType);
-    } else {
-      queryBuilder = QueryBuilder<CategoryDatabase>(CategoryDatabase())
-        ..whereEqualTo(CategoryDatabase.roCode, roCode)..whereEqualTo(
-            CategoryDatabase.categoryType, categoryType)..whereEqualTo(
-            CategoryDatabase.categoryName, textSearch);
-    }
-    return queryBuilder.query();
-
-
-//    ParseResponse apiResponse = await queryBuilder.query();
-//    if (apiResponse.success && apiResponse.result != null) {
-//      final List<ParseObject> listFromApi = apiResponse.result;
-//      setState(() {
-//        _categoryDatabase = new List();
-//      });
-//      for (int i = 0; i < listFromApi.length; i++) {
-//        Map output = json.decode(listFromApi[i].toString());
-//        CategoryDatabase categoryDatabase =
-//        new CategoryDatabase().fromJson(output);
-//        print(categoryDatabase.category_name);
-//        setState(() {
-//          _categoryDatabase.add(categoryDatabase);
-//        });
-//      }
-//      return _categoryDatabase;
-//    } else {}
-  }
-
 }
 
+_query(String roCode, String categoryType, String textSearch) async {
+  QueryBuilder<ParseObject> queryBuilder;
+  if (textSearch == "") {
+    queryBuilder = QueryBuilder<CategoryDatabase>(CategoryDatabase())
+      ..whereEqualTo(CategoryDatabase.roCode, roCode)..whereEqualTo(
+          CategoryDatabase.categoryType, categoryType);
+  } else {
+    queryBuilder = QueryBuilder<CategoryDatabase>(CategoryDatabase())
+      ..whereEqualTo(CategoryDatabase.roCode, roCode)..whereEqualTo(
+          CategoryDatabase.categoryType, categoryType)..whereEqualTo(
+          CategoryDatabase.categoryName, textSearch);
+  }
+  return queryBuilder.query();
+}
 /*Delete*/
 Future deleteCategoryFromDatabase(
     CategoryDatabase receivedCategoryDatabase) async {
