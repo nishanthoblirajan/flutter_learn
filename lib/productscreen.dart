@@ -21,13 +21,13 @@ class productscreen extends StatefulWidget {
 /*TODO show all the products added below the Add New Products Button*/
 
 class _productscreenState extends State<productscreen> {
-
   TextEditingController searchTextController = new TextEditingController();
   TextEditingController barcodeTextController = new TextEditingController();
+
   @override
   initState() {
-    searchTextController.text="";
-    barcodeTextController.text="";
+    searchTextController.text = "";
+    barcodeTextController.text = "";
     initSharedPrefs();
     super.initState();
   }
@@ -49,6 +49,47 @@ class _productscreenState extends State<productscreen> {
 
   @override
   Widget build(BuildContext context) {
+    var futurebuilder = new FutureBuilder(
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        print('Connection State: ' + snapshot.connectionState.toString());
+        if (snapshot.hasData) {
+          if (snapshot.data != null) {
+            print('Im Inside');
+            return ListView(children: _getData(snapshot));
+          } else {
+            return Center(
+              child: new CircularProgressIndicator(),
+            );
+          }
+        } else {
+          return Center(
+            child: new CircularProgressIndicator(),
+          );
+        }
+      },
+      future:
+          _query(roCode, searchTextController.text, barcodeTextController.text),
+    );
+
+    List<Widget> _getData(AsyncSnapshot snapshot) {
+      ParseResponse apiResponse = snapshot.data;
+      if (apiResponse.success && apiResponse.result != null) {
+        final List<ParseObject> listFromApi = apiResponse.result;
+        _productDatabase = new List();
+        for (int i = 0; i < listFromApi.length; i++) {
+          print(listFromApi[i].toString());
+          Map output = json.decode(listFromApi[i].toString());
+          ProductDatabase productDatabase =
+              new ProductDatabase().fromJson(output);
+          print(productDatabase.name);
+          _productDatabase.add(productDatabase);
+        }
+      }
+
+      List<Widget> widgetLists = new List();
+      for(int index=0;index<)
+    }
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -61,7 +102,11 @@ class _productscreenState extends State<productscreen> {
       appBar: AppBar(
         title: _appBarTitle,
         actions: <Widget>[
-          IconButton(icon: _searchIcon, onPressed: () {_searchPressed();})
+          IconButton(
+              icon: _searchIcon,
+              onPressed: () {
+                _searchPressed();
+              })
         ],
       ),
       body: Padding(
@@ -69,17 +114,18 @@ class _productscreenState extends State<productscreen> {
         child: new Container(
           child: new Column(
             children: <Widget>[
-              Row(children: <Widget>[
-                Expanded(
-                  child: RaisedButton(
-                    onPressed: () {
-                      _barcodeScanning();
-                    },
-                    child: Text('Scan'),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: RaisedButton(
+                      onPressed: () {
+                        _barcodeScanning();
+                      },
+                      child: Text('Scan'),
+                    ),
                   ),
-                ),
-              ],)
-              ,
+                ],
+              ),
               Expanded(
                   child: new FutureBuilder(
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -108,7 +154,8 @@ class _productscreenState extends State<productscreen> {
                     );
                   }
                 },
-                future: query(roCode,searchTextController.text,barcodeTextController.text),
+                future: _query(roCode, searchTextController.text,
+                    barcodeTextController.text),
               )),
             ],
           ),
@@ -120,47 +167,22 @@ class _productscreenState extends State<productscreen> {
   /*Necessary Functions*/
   List<ProductDatabase> _productDatabase;
 
-  query(String roCode,String textSearch,String barCodeSearch) async {
+  _query(String roCode, String textSearch, String barCodeSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
-    if(textSearch==""&&barCodeSearch==""){
-      queryBuilder =
-      QueryBuilder<ProductDatabase>(ProductDatabase())
+    if (textSearch == "" && barCodeSearch == "") {
+      queryBuilder = QueryBuilder<ProductDatabase>(ProductDatabase())
         ..whereEqualTo(ProductDatabase.roCode, roCode);
-    }else if(textSearch!=""&&barCodeSearch==""){
-      queryBuilder =
-      QueryBuilder<ProductDatabase>(ProductDatabase())
-        ..whereEqualTo(ProductDatabase.roCode, roCode)..whereContains(ProductDatabase.keyName, textSearch);
-    }else if(textSearch==""&&barCodeSearch!=""){
-      queryBuilder =
-      QueryBuilder<ProductDatabase>(ProductDatabase())
-        ..whereEqualTo(ProductDatabase.roCode, roCode)..whereContains(ProductDatabase.keySKU, barCodeSearch);
-    }else{
-
+    } else if (textSearch != "" && barCodeSearch == "") {
+      queryBuilder = QueryBuilder<ProductDatabase>(ProductDatabase())
+        ..whereEqualTo(ProductDatabase.roCode, roCode)
+        ..whereContains(ProductDatabase.keyName, textSearch);
+    } else if (textSearch == "" && barCodeSearch != "") {
+      queryBuilder = QueryBuilder<ProductDatabase>(ProductDatabase())
+        ..whereEqualTo(ProductDatabase.roCode, roCode)
+        ..whereContains(ProductDatabase.keySKU, barCodeSearch);
     }
-    ParseResponse apiResponse = await queryBuilder.query();
-    if (apiResponse.success && apiResponse.result != null) {
-      final List<ParseObject> listFromApi = apiResponse.result;
-      setState(() {
-      _productDatabase = new List();
 
-      });
-      for (int i = 0; i < listFromApi.length; i++) {
-        print(listFromApi[i].toString());
-        Map output = json.decode(listFromApi[i].toString());
-        ProductDatabase productDatabase =
-            new ProductDatabase().fromJson(output);
-        print(productDatabase.name);
-        setState(() {
-          _productDatabase.add(productDatabase);
-        });
-      }
-      return _productDatabase;
-    } else {
-      setState(() {
-        loadingScreen = "No data found";
-      });
-      print('Result: ${apiResponse.error.message}');
-    }
+    return queryBuilder.query();
   }
 
   _showDialog(BuildContext context, ProductDatabase productDatabase) {
@@ -192,7 +214,6 @@ class _productscreenState extends State<productscreen> {
         });
   }
 
-
   /*TODO test barcode scanning*/
   Future _barcodeScanning() async {
     try {
@@ -200,17 +221,12 @@ class _productscreenState extends State<productscreen> {
       setState(() {
         barcodeTextController.text = barcode;
       });
-      Fluttertoast.showToast(msg: "Searching Barcode "+barcode);
+      Fluttertoast.showToast(msg: "Searching Barcode " + barcode);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
-      } else {
-      }
-    } on FormatException {
-    } catch (e) {
-    }
+      } else {}
+    } on FormatException {} catch (e) {}
   }
-
-
 
   void _searchPressed() {
     setState(() {
@@ -219,8 +235,8 @@ class _productscreenState extends State<productscreen> {
         this._appBarTitle = new TextField(
           controller: searchTextController,
           decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search),
-              hintText: 'Search...',
+            prefixIcon: new Icon(Icons.search),
+            hintText: 'Search...',
           ),
         );
       } else {
@@ -230,5 +246,3 @@ class _productscreenState extends State<productscreen> {
     });
   }
 }
-
-
