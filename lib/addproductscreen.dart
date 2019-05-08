@@ -139,7 +139,6 @@ class _addproductscreenState extends State<addproductscreen> {
                 ),
                 RaisedButton(
                   onPressed: () async {
-                    /*NEW TODO*/
                     Map results =
                         await Navigator.of(context).push(new MaterialPageRoute(
                             builder: (context) => CategoryScreen(
