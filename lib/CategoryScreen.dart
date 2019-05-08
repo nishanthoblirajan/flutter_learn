@@ -17,6 +17,7 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
+
   String categoryType;
 
   TextEditingController searchTextController = new TextEditingController();
@@ -43,37 +44,41 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     var loading = CircularProgressIndicator();
+
     var futurebuilder = new FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.data == null) {
-          return Container(
-            child: Center(child: loading),
-          );
-        } else {
-          return ListView.builder(
-            itemBuilder: (BuildContext context, int index) {
-              return new ListTile(
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    setState(() {
-                      deleteCategoryFromDatabase(_categoryDatabase[index]);
-                    });
-                  },
-                ),
-                title: Text(_categoryDatabase[index].category_name),
-                onTap: () {
-                  sharedPreferences.setString(categoryType + "_category",
-                      _categoryDatabase[index].category_name);
-                  Navigator.of(context).pop({
-                    'category_selection': _categoryDatabase[index].category_name
-                  });
+        print('Connection State: '+snapshot.connectionState.toString());
+            if (snapshot.hasError)
+              return new Text('Error: ${snapshot.error}');
+            else {
+              return ListView.builder(
+                itemBuilder: (BuildContext context, int index) {
+                  return new ListTile(
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        setState(() {
+                          deleteCategoryFromDatabase(_categoryDatabase[index]);
+                        setState(() {
+                          new CategoryScreen(categoryType: categoryType);
+                        });
+                        });
+                      },
+                    ),
+                    title: Text(_categoryDatabase[index].category_name),
+                    onTap: () {
+                      sharedPreferences.setString(categoryType + "_category",
+                          _categoryDatabase[index].category_name);
+                      Navigator.of(context).pop({
+                        'category_selection': _categoryDatabase[index].category_name
+                      });
+                    },
+                  );
                 },
+                itemCount: snapshot.data.length,
               );
-            },
-            itemCount: snapshot.data.length,
-          );
-        }
+
+            }
       },
       future: query(roCode, categoryType, searchTextController.text),
     );
