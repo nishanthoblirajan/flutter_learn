@@ -17,7 +17,8 @@ class addproductscreen extends StatefulWidget {
 }
 
 class _addproductscreenState extends State<addproductscreen> {
-  FocusNode _focusNode = new FocusNode();
+
+
 
   String operationType = "Add";
   String barcode = "";
@@ -34,25 +35,8 @@ class _addproductscreenState extends State<addproductscreen> {
 
   ProductDatabase productDatabase;
 
-  Future<Null> _focusNodeListener() async {
-    if (_focusNode.hasFocus) {
-      print('TextField got the focus');
-    } else {
-      print('TextField lost the focus');
-    }
-  }
-
-  @override
-  void dispose() {
-    _focusNode.removeListener(_focusNodeListener);
-
-    super.dispose();
-  }
-
   @override
   initState() {
-    _focusNode.addListener(_focusNodeListener);
-
     if (widget.receivedProductDatabase != null) {
       operationType = "Edit";
       productDatabase = widget.receivedProductDatabase;
@@ -82,10 +66,8 @@ class _addproductscreenState extends State<addproductscreen> {
     });
   }
 
-  Widget productForm() {
-    return Form(
-        child: SingleChildScrollView(
-            child: Column(
+  Widget productForm(){
+    return Form(child: ListView(
       children: <Widget>[
         TextFormField(
           controller: nameController,
@@ -147,18 +129,18 @@ class _addproductscreenState extends State<addproductscreen> {
           controller: cgstController,
           decoration: InputDecoration(labelText: 'CGST'),
           textInputAction: TextInputAction.next,
-          focusNode: _focusNode,
         ),
         RaisedButton(
           onPressed: () async {
             Map results =
-                await Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (context) => CategoryScreen(
-                          categoryType: 'Product',
-                          isAdmin: false,
-                        )));
+            await Navigator.of(context).push(new MaterialPageRoute(
+                builder: (context) => CategoryScreen(
+                  categoryType: 'Product',
+                  isAdmin: false,
+                )));
 
-            if (results != null && results.containsKey('category_selection')) {
+            if (results != null &&
+                results.containsKey('category_selection')) {
               setState(() {
                 categoryController.text = results['category_selection'];
               });
@@ -169,9 +151,9 @@ class _addproductscreenState extends State<addproductscreen> {
         Text(categoryController.text),
         buildRaisedButton(context)
       ],
-    )));
+    )
+    );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -179,7 +161,7 @@ class _addproductscreenState extends State<addproductscreen> {
       appBar: AppBar(
         title: Text(operationType + " Product"),
       ),
-      body: Padding(
+      body:Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
           child: productForm(),
@@ -191,29 +173,27 @@ class _addproductscreenState extends State<addproductscreen> {
   Widget buildRaisedButton(BuildContext context) {
     Widget deleteButton = RaisedButton(
       onPressed: () {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return new AlertDialog(
-                title: new Text("Do you want to delete?"),
-                content: new Text("This cannot be undone"),
-                actions: <Widget>[
-                  new FlatButton(
-                    child: new Text("No"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  // usually buttons at the bottom of the dialog
-                  new FlatButton(
-                    child: new Text("Yes"),
-                    onPressed: () {
-                      deleteProductFromDatabase(productDatabase);
-                    },
-                  ),
-                ],
-              );
-            });
+        showDialog(context: context,builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text("Do you want to delete?"),
+            content: new Text("This cannot be undone"),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("No"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Yes"),
+                onPressed: () {
+                  deleteProductFromDatabase(productDatabase);
+                },
+              ),
+            ],
+          );
+        });
       },
       child: Text('Delete Product'),
     );
