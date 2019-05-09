@@ -21,24 +21,25 @@ Widget buildDrawer(BuildContext context) => Drawer(
                   Navigator.of(context).push(new MaterialPageRoute(
                       builder: (context) => ContactScreen(
                         contactType: 'Customer',
-                      )));
-                }),
-          ),
-          Container(
-            child: ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
-                title: Text('Add Customer'),
-                onTap: () {
-                  Navigator.of(context).push(new MaterialPageRoute(
-                      builder: (context) => AddContactScreen(
-                        contactType: 'Customer',
-                        contactList: new List<ContactDatabase>(),
+                        isAdmin: true,
                       )));
                 }),
           ),
           buildMenuItem(context, 'Invoice', 'invoicescreen'),
           buildMenuItemWithout('Payment'),
           buildHeadingMenu('Purchase'),
+          Container(
+            child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
+                title: Text('Vendor'),
+                onTap: () {
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => ContactScreen(
+                        contactType: 'Vendor',
+                        isAdmin: true,
+                      )));
+                }),
+          ),
           buildMenuItemWithout('Invoice'),
           buildMenuItemWithout('Payment'),
           buildHeadingMenu('Expenses'),

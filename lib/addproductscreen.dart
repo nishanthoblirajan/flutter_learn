@@ -17,6 +17,8 @@ class addproductscreen extends StatefulWidget {
 }
 
 class _addproductscreenState extends State<addproductscreen> {
+  FocusNode _focusNode = new FocusNode();
+
   String operationType = "Add";
   String barcode = "";
   TextEditingController nameController = new TextEditingController();
@@ -32,8 +34,25 @@ class _addproductscreenState extends State<addproductscreen> {
 
   ProductDatabase productDatabase;
 
+  Future<Null> _focusNodeListener() async {
+    if (_focusNode.hasFocus) {
+      print('TextField got the focus');
+    } else {
+      print('TextField lost the focus');
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_focusNodeListener);
+
+    super.dispose();
+  }
+
   @override
   initState() {
+    _focusNode.addListener(_focusNodeListener);
+
     if (widget.receivedProductDatabase != null) {
       operationType = "Edit";
       productDatabase = widget.receivedProductDatabase;
@@ -63,6 +82,96 @@ class _addproductscreenState extends State<addproductscreen> {
     });
   }
 
+  Widget productForm() {
+    return Form(
+        child: SingleChildScrollView(
+            child: Column(
+      children: <Widget>[
+        TextFormField(
+          controller: nameController,
+          decoration: InputDecoration(labelText: 'Product Name'),
+          textInputAction: TextInputAction.next,
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Expanded(
+              child: TextFormField(
+                controller: barcodeController,
+                decoration: InputDecoration(labelText: 'Product SKU'),
+                textInputAction: TextInputAction.next,
+              ),
+            ),
+            Expanded(
+              child: RaisedButton(
+                onPressed: () {
+                  Fluttertoast.showToast(msg: 'Scan Barcode');
+                  barcodeScanning();
+                },
+                child: Text('Scan'),
+              ),
+            ),
+          ],
+        ),
+        TextFormField(
+          controller: salePriceController,
+          decoration: InputDecoration(labelText: 'Sale Price'),
+          textInputAction: TextInputAction.next,
+        ),
+        TextFormField(
+          controller: purchasePriceController,
+          decoration: InputDecoration(labelText: 'Purchase Price'),
+          textInputAction: TextInputAction.next,
+        ),
+        TextFormField(
+          controller: quantityController,
+          decoration: InputDecoration(labelText: 'Quantity'),
+          textInputAction: TextInputAction.next,
+        ),
+        TextFormField(
+          controller: taxCodeController,
+          decoration: InputDecoration(labelText: 'Tax Code'),
+          textInputAction: TextInputAction.next,
+        ),
+        TextFormField(
+          controller: taxNameController,
+          decoration: InputDecoration(labelText: 'Tax Name'),
+          textInputAction: TextInputAction.next,
+        ),
+        TextFormField(
+          controller: sgstController,
+          decoration: InputDecoration(labelText: 'SGST'),
+          textInputAction: TextInputAction.next,
+        ),
+        TextFormField(
+          controller: cgstController,
+          decoration: InputDecoration(labelText: 'CGST'),
+          textInputAction: TextInputAction.next,
+          focusNode: _focusNode,
+        ),
+        RaisedButton(
+          onPressed: () async {
+            Map results =
+                await Navigator.of(context).push(new MaterialPageRoute(
+                    builder: (context) => CategoryScreen(
+                          categoryType: 'Product',
+                          isAdmin: false,
+                        )));
+
+            if (results != null && results.containsKey('category_selection')) {
+              setState(() {
+                categoryController.text = results['category_selection'];
+              });
+            }
+          },
+          child: Text('Category'),
+        ),
+        Text(categoryController.text),
+        buildRaisedButton(context)
+      ],
+    )));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,96 +179,10 @@ class _addproductscreenState extends State<addproductscreen> {
       appBar: AppBar(
         title: Text(operationType + " Product"),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  controller: nameController,
-                  decoration: InputDecoration(labelText: 'Product Name'),
-                  textInputAction: TextInputAction.next,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Expanded(
-                      child: TextFormField(
-                        controller: barcodeController,
-                        decoration: InputDecoration(labelText: 'Product SKU'),
-                        textInputAction: TextInputAction.next,
-                      ),
-                    ),
-                    Expanded(
-                      child: RaisedButton(
-                        onPressed: () {
-                          Fluttertoast.showToast(msg: 'Scan Barcode');
-                          barcodeScanning();
-                        },
-                        child: Text('Scan'),
-                      ),
-                    ),
-                  ],
-                ),
-                TextFormField(
-                  controller: salePriceController,
-                  decoration: InputDecoration(labelText: 'Sale Price'),
-                  textInputAction: TextInputAction.next,
-                ),
-                TextFormField(
-                  controller: purchasePriceController,
-                  decoration: InputDecoration(labelText: 'Purchase Price'),
-                  textInputAction: TextInputAction.next,
-                ),
-                TextFormField(
-                  controller: quantityController,
-                  decoration: InputDecoration(labelText: 'Quantity'),
-                  textInputAction: TextInputAction.next,
-                ),
-                TextFormField(
-                  controller: taxCodeController,
-                  decoration: InputDecoration(labelText: 'Tax Code'),
-                  textInputAction: TextInputAction.next,
-                ),
-                TextFormField(
-                  controller: taxNameController,
-                  decoration: InputDecoration(labelText: 'Tax Name'),
-                  textInputAction: TextInputAction.next,
-                ),
-                TextFormField(
-                  controller: sgstController,
-                  decoration: InputDecoration(labelText: 'SGST'),
-                  textInputAction: TextInputAction.next,
-                ),
-                TextFormField(
-                  controller: cgstController,
-                  decoration: InputDecoration(labelText: 'CGST'),
-                  textInputAction: TextInputAction.next,
-                ),
-                RaisedButton(
-                  onPressed: () async {
-                    Map results =
-                        await Navigator.of(context).push(new MaterialPageRoute(
-                            builder: (context) => CategoryScreen(
-                                  categoryType: 'Product',
-                              isAdmin: false,
-                                )));
-
-                    if (results != null &&
-                        results.containsKey('category_selection')) {
-                      setState(() {
-                        categoryController.text = results['category_selection'];
-                      });
-                    }
-                  },
-                  child: Text('Category'),
-                ),
-                Text(categoryController.text),
-                buildRaisedButton(context)
-              ],
-            ),
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          child: productForm(),
         ),
       ),
     );
@@ -168,27 +191,29 @@ class _addproductscreenState extends State<addproductscreen> {
   Widget buildRaisedButton(BuildContext context) {
     Widget deleteButton = RaisedButton(
       onPressed: () {
-        showDialog(context: context,builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text("Do you want to delete?"),
-            content: new Text("This cannot be undone"),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("No"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              // usually buttons at the bottom of the dialog
-              new FlatButton(
-                child: new Text("Yes"),
-                onPressed: () {
-                  deleteProductFromDatabase(productDatabase);
-                },
-              ),
-            ],
-          );
-        });
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return new AlertDialog(
+                title: new Text("Do you want to delete?"),
+                content: new Text("This cannot be undone"),
+                actions: <Widget>[
+                  new FlatButton(
+                    child: new Text("No"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  // usually buttons at the bottom of the dialog
+                  new FlatButton(
+                    child: new Text("Yes"),
+                    onPressed: () {
+                      deleteProductFromDatabase(productDatabase);
+                    },
+                  ),
+                ],
+              );
+            });
       },
       child: Text('Delete Product'),
     );

@@ -14,7 +14,9 @@ class AddContactScreen extends StatefulWidget {
   @override
   _AddContactScreenState createState() => _AddContactScreenState();
 
-  AddContactScreen({Key key, @required this.contactType,@required this.contactList}) : super(key: key);
+  AddContactScreen(
+      {Key key, @required this.contactType, @required this.contactList})
+      : super(key: key);
 }
 
 class _AddContactScreenState extends State<AddContactScreen> {
@@ -22,13 +24,18 @@ class _AddContactScreenState extends State<AddContactScreen> {
   List<ContactDatabase> contactList;
 
   TextEditingController contactNameController = new TextEditingController();
+  TextEditingController contactAddressController = new TextEditingController();
+  TextEditingController contactPhoneNumberController = new TextEditingController();
+
+  TextEditingController contactBusinessNameController= new TextEditingController();
+  TextEditingController contactGSTController= new TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
     contactType = widget.contactType;
     contactList = widget.contactList;
-    contactNameController.text="";
+    contactNameController.text = "";
     initSharedPrefs();
     super.initState();
   }
@@ -43,6 +50,54 @@ class _AddContactScreenState extends State<AddContactScreen> {
     });
   }
 
+  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+
+
+
+  Widget contactForm(){
+    return Form(
+        key: _formKey,
+        autovalidate: true,
+        child: new ListView(
+          children: <Widget>[
+            TextFormField(
+              controller: contactBusinessNameController,
+              decoration: InputDecoration(labelText: 'Business Name'),
+              keyboardType: TextInputType.text,
+            ),
+            TextFormField(
+              controller: contactNameController,
+              decoration: InputDecoration(labelText: 'Name'),
+              keyboardType: TextInputType.text,
+            ),
+            TextFormField(
+              controller: contactAddressController,
+              maxLines: null,
+              decoration: InputDecoration(labelText: 'Address'),
+              keyboardType: TextInputType.text,
+
+            ),
+            TextFormField(
+              controller: contactPhoneNumberController,
+              decoration: InputDecoration(labelText: 'Phone Number'),
+              keyboardType: TextInputType.phone,
+            ),
+            TextFormField(
+              controller: contactGSTController,
+              decoration: InputDecoration(labelText: 'GST'),
+              keyboardType: TextInputType.text,
+              maxLength: 15,
+            ),
+            RaisedButton(
+              onPressed: () {
+                addContact(roCode, contactType, contactNameController.text);
+              },
+              child: Text('Add Contact'),
+            )
+          ],
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,23 +107,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: TextFormField(
-                  controller: contactNameController,
-                  decoration: InputDecoration(labelText: 'Contact Name'),
-                  textInputAction: TextInputAction.next,
-                ),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  addContact(roCode, contactType, contactNameController.text);
-                },
-                child: Text('Add Contact'),
-              )
-            ],
-          ),
+          child: contactForm(),
         ),
       ),
     );
@@ -76,19 +115,23 @@ class _AddContactScreenState extends State<AddContactScreen> {
 
   Future addContact(
       String roCode, String contactType, String contactName) async {
-    print('Add Contact'+roCode+" "+contactType+" "+contactName);
+    print('Add Contact' + roCode + " " + contactType + " " + contactName);
     ContactDatabase contactDatabase = new ContactDatabase();
     contactDatabase.ro_code = roCode;
     contactDatabase.contact_type = contactType;
+    contactDatabase.contact_business = contactBusinessNameController.text;
     contactDatabase.contact_name = contactName;
+    contactDatabase.contact_address=contactAddressController.text;
+    contactDatabase.contact_phone=contactPhoneNumberController.text;
+    contactDatabase.contact_gst=contactGSTController.text;
     var found = false;
-    for(int i=0;i<contactList.length;i++){
-      if(contactList[i].contact_name==contactName){
+    for (int i = 0; i < contactList.length; i++) {
+      if (contactList[i].contact_name == contactName) {
         found = true;
         Fluttertoast.showToast(msg: 'Contact already present');
       }
     }
-    if(!found){
+    if (!found) {
       var saveResponse = await contactDatabase.save();
 
       if (saveResponse.success) {
@@ -99,9 +142,5 @@ class _AddContactScreenState extends State<AddContactScreen> {
         Fluttertoast.showToast(msg: 'Error', backgroundColor: Colors.red);
       }
     }
-
-
   }
-
-
 }

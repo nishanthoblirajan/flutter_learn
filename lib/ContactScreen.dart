@@ -83,7 +83,7 @@ class _ContactScreenState extends State<ContactScreen> {
           Navigator.of(context).push(new MaterialPageRoute(
               builder: (context) =>
                   AddContactScreen(
-                    contactType: 'Customer',
+                    contactType: contactType,
                     contactList: _contactDatabase,
                   )));
         },
