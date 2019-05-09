@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'AddContactScreen.dart';
 import 'CategoryScreen.dart';
+import 'ContactScreen.dart';
+import 'DataClasses/ContactDatabase.dart';
 
 Widget buildDrawer(BuildContext context) => Drawer(
       child: ListView(
@@ -10,6 +13,29 @@ Widget buildDrawer(BuildContext context) => Drawer(
           buildMenuItem(context, 'POS', 'pos'),
           buildMenuItem(context, 'Product', 'productscreen'),
           buildHeadingMenu('Sale'),
+          Container(
+            child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
+                title: Text('Customers'),
+                onTap: () {
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => ContactScreen(
+                        contactType: 'Customer',
+                      )));
+                }),
+          ),
+          Container(
+            child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
+                title: Text('Add Customer'),
+                onTap: () {
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => AddContactScreen(
+                        contactType: 'Customer',
+                        contactList: new List<ContactDatabase>(),
+                      )));
+                }),
+          ),
           buildMenuItem(context, 'Invoice', 'invoicescreen'),
           buildMenuItemWithout('Payment'),
           buildHeadingMenu('Purchase'),

@@ -2,26 +2,26 @@ import 'dart:convert';
 
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_world/AddCategoryScreen.dart';
+import 'package:hello_world/AddContactScreen.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'DataClasses/CategoryDatabase.dart';
+import 'DataClasses/ContactDatabase.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 
 
-class CategoryScreen extends StatefulWidget {
-  String categoryType;
+class ContactScreen extends StatefulWidget {
+  String contactType;
 
   bool isAdmin;
   @override
-  _CategoryScreenState createState() => _CategoryScreenState();
+  _ContactScreenState createState() => _ContactScreenState();
 
-  CategoryScreen({Key key, @required this.categoryType, this.isAdmin}) : super(key: key);
+  ContactScreen({Key key, @required this.contactType, this.isAdmin}) : super(key: key);
 }
 
-class _CategoryScreenState extends State<CategoryScreen> {
-  String categoryType;
+class _ContactScreenState extends State<ContactScreen> {
+  String contactType;
 
   bool isAdmin;
 
@@ -33,7 +33,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   initState() {
     isAdmin = widget.isAdmin;
-    categoryType = widget.categoryType;
+    contactType = widget.contactType;
     searchTextController.text = "";
     initSharedPrefs();
     super.initState();
@@ -73,25 +73,25 @@ class _CategoryScreenState extends State<CategoryScreen> {
           );
         }
       },
-      future: _query(roCode, categoryType, searchTextController.text),
+      future: _query(roCode, contactType, searchTextController.text),
     );
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          /*TODO add new category name*/
+          /*TODO add new contact name*/
           Navigator.of(context).push(new MaterialPageRoute(
               builder: (context) =>
-                  AddCategoryScreen(
-                    categoryType: 'Product',
-                    categoryList: _categoryDatabase,
+                  AddContactScreen(
+                    contactType: 'Customer',
+                    contactList: _contactDatabase,
                   )));
         },
         icon: Icon(Icons.add),
         label: Text('Add'),
       ),
       appBar: AppBar(
-        title: new Text(categoryType + ' Category'),
+        title: new Text(contactType + ' Contact'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -106,7 +106,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
-  List<CategoryDatabase> _categoryDatabase = [];
+  List<ContactDatabase> _contactDatabase = [];
 
 
 
@@ -114,37 +114,37 @@ class _CategoryScreenState extends State<CategoryScreen> {
     ParseResponse apiResponse = snapshot.data;
     if (apiResponse.success && apiResponse.result != null) {
       final List<ParseObject> listFromApi = apiResponse.result;
-      _categoryDatabase = new List();
+      _contactDatabase = new List();
       for (int i = 0; i < listFromApi.length; i++) {
         Map output = json.decode(listFromApi[i].toString());
-        CategoryDatabase categoryDatabase =
-        new CategoryDatabase().fromJson(output);
-        print(categoryDatabase.category_name);
-        _categoryDatabase.add(categoryDatabase);
+        ContactDatabase contactDatabase =
+        new ContactDatabase().fromJson(output);
+        print(contactDatabase.contact_name);
+        _contactDatabase.add(contactDatabase);
       }
     }
 
     List<Widget> widgetLists = new List();
-    for (int index = 0; index < _categoryDatabase.length; index++) {
+    for (int index = 0; index < _contactDatabase.length; index++) {
       widgetLists.add(ListTile(
         trailing: IconButton(
           icon: Icon(Icons.delete),
           onPressed: () {
             if(isAdmin){
-                deleteCategoryFromDatabase(_categoryDatabase[index]);
+              deleteContactFromDatabase(_contactDatabase[index]);
             }else{
               Fluttertoast.showToast(msg: 'Require Admin');
             }
 
           },
         ),
-        title: Text(_categoryDatabase[index].category_name),
+        title: Text(_contactDatabase[index].contact_name),
         onTap: () {
-          sharedPreferences.setString(categoryType + "_category",
-              _categoryDatabase[index].category_name);
+          sharedPreferences.setString(contactType + "_contact",
+              _contactDatabase[index].contact_name);
           Navigator.of(context).pop({
-            'category_selection':
-            _categoryDatabase[index].category_name
+            'contact_selection':
+            _contactDatabase[index].contact_name
           });
         },
       ));
@@ -154,34 +154,34 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
 }
 
-/*TODO 09/05/2019 implement category screen search*/
-_query(String roCode, String categoryType, String textSearch) async {
+/*TODO 09/05/2019 implement contact screen search*/
+_query(String roCode, String contactType, String textSearch) async {
   QueryBuilder<ParseObject> queryBuilder;
   if (textSearch == "") {
-    queryBuilder = QueryBuilder<CategoryDatabase>(CategoryDatabase())
-      ..whereEqualTo(CategoryDatabase.roCode, roCode)..whereEqualTo(
-          CategoryDatabase.categoryType, categoryType);
+    queryBuilder = QueryBuilder<ContactDatabase>(ContactDatabase())
+      ..whereEqualTo(ContactDatabase.roCode, roCode)..whereEqualTo(
+          ContactDatabase.contactType, contactType);
   } else {
-    queryBuilder = QueryBuilder<CategoryDatabase>(CategoryDatabase())
-      ..whereEqualTo(CategoryDatabase.roCode, roCode)..whereEqualTo(
-          CategoryDatabase.categoryType, categoryType)..whereContains(
-          CategoryDatabase.categoryName, textSearch);
+    queryBuilder = QueryBuilder<ContactDatabase>(ContactDatabase())
+      ..whereEqualTo(ContactDatabase.roCode, roCode)..whereEqualTo(
+          ContactDatabase.contactType, contactType)..whereContains(
+          ContactDatabase.contactName, textSearch);
   }
   return queryBuilder.query();
 }
 
 /*Delete*/
-Future deleteCategoryFromDatabase(
-    CategoryDatabase receivedCategoryDatabase) async {
-  String objectID = receivedCategoryDatabase.get('objectId');
+Future deleteContactFromDatabase(
+    ContactDatabase receivedContactDatabase) async {
+  String objectID = receivedContactDatabase.get('objectId');
   print('Delete ' + objectID);
-  CategoryDatabase categoryDatabase = new CategoryDatabase();
-  categoryDatabase.set('objectId', objectID);
-  print('Delete ' + categoryDatabase.toString());
-  var deleteResponse = await categoryDatabase.delete();
+  ContactDatabase contactDatabase = new ContactDatabase();
+  contactDatabase.set('objectId', objectID);
+  print('Delete ' + contactDatabase.toString());
+  var deleteResponse = await contactDatabase.delete();
   if (deleteResponse.success) {
     Fluttertoast.showToast(
-        msg: 'Product Deleted', backgroundColor: Colors.blue);
+        msg: 'Customer Deleted', backgroundColor: Colors.blue);
   } else {
     Fluttertoast.showToast(msg: 'Error', backgroundColor: Colors.red);
   }
