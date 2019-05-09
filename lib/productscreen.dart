@@ -24,8 +24,11 @@ class _productscreenState extends State<productscreen> {
   TextEditingController searchTextController = new TextEditingController();
   TextEditingController barcodeTextController = new TextEditingController();
 
+  String scanText;
+
   @override
   initState() {
+    scanText='Scan';
     searchTextController.text = "";
     barcodeTextController.text = "";
     initSharedPrefs();
@@ -107,7 +110,7 @@ class _productscreenState extends State<productscreen> {
                       onPressed: () {
                         _barcodeScanning();
                       },
-                      child: Text('Scan'),
+                      child: Text(scanText),
                     ),
                   ),
                 ],
@@ -205,16 +208,26 @@ class _productscreenState extends State<productscreen> {
 
   /*TODO test barcode scanning*/
   Future _barcodeScanning() async {
-    try {
-      String barcode = await BarcodeScanner.scan();
+    if(scanText!='Clear'){
+      try {
+        String barcode = await BarcodeScanner.scan();
+        setState(() {
+          scanText='Clear';
+          barcodeTextController.text = barcode;
+        });
+        Fluttertoast.showToast(msg: "Searching Barcode " + barcode);
+      } on PlatformException catch (e) {
+        if (e.code == BarcodeScanner.CameraAccessDenied) {
+        } else {}
+      } on FormatException {} catch (e) {}
+    }else{
       setState(() {
-        barcodeTextController.text = barcode;
+        scanText='Scan';
+        barcodeTextController.text='';
+        Fluttertoast.showToast(msg: 'Cleared');
       });
-      Fluttertoast.showToast(msg: "Searching Barcode " + barcode);
-    } on PlatformException catch (e) {
-      if (e.code == BarcodeScanner.CameraAccessDenied) {
-      } else {}
-    } on FormatException {} catch (e) {}
+    }
+
   }
 
   void _searchPressed() {
