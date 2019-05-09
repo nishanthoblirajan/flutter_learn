@@ -27,7 +27,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   TextEditingController searchTextController = new TextEditingController();
 
-
+  Widget _appBarTitle;
+  Icon _searchIcon = new Icon(Icons.search);
 
   /*Use normal listview after setting the query in initState*/
   @override
@@ -35,6 +36,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
     isAdmin = widget.isAdmin;
     categoryType = widget.categoryType;
     searchTextController.text = "";
+    _appBarTitle = new Text(categoryType + ' Category');
+
     initSharedPrefs();
     super.initState();
   }
@@ -53,6 +56,24 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    void _searchPressed() {
+      setState(() {
+        if (this._searchIcon.icon == Icons.search) {
+          this._searchIcon = new Icon(Icons.close);
+          this._appBarTitle = new TextField(
+            controller: searchTextController,
+            decoration: new InputDecoration(
+              prefixIcon: new Icon(Icons.search),
+              hintText: 'Search...',
+            ),
+          );
+        } else {
+          this._searchIcon = new Icon(Icons.search);
+          this._appBarTitle = new Text(categoryType + ' Category');
+        }
+      });
+    }
+
 
     var futurebuilder = new FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -90,9 +111,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
         icon: Icon(Icons.add),
         label: Text('Add'),
       ),
-      appBar: AppBar(
-        title: new Text(categoryType + ' Category'),
-      ),
+        appBar: AppBar(
+          title: _appBarTitle,
+          actions: <Widget>[
+            IconButton(
+                icon: _searchIcon,
+                onPressed: () {
+                  _searchPressed();
+                })
+          ],
+        ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Container(

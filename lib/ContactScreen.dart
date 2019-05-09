@@ -27,7 +27,8 @@ class _ContactScreenState extends State<ContactScreen> {
 
   TextEditingController searchTextController = new TextEditingController();
 
-
+  Widget _appBarTitle;
+  Icon _searchIcon = new Icon(Icons.search);
 
   /*Use normal listview after setting the query in initState*/
   @override
@@ -35,6 +36,7 @@ class _ContactScreenState extends State<ContactScreen> {
     isAdmin = widget.isAdmin;
     contactType = widget.contactType;
     searchTextController.text = "";
+    _appBarTitle = new Text(contactType + ' Contact');
     initSharedPrefs();
     super.initState();
   }
@@ -54,7 +56,28 @@ class _ContactScreenState extends State<ContactScreen> {
   @override
   Widget build(BuildContext context) {
 
-    var futurebuilder = new FutureBuilder(
+
+    void _searchPressed() {
+      setState(() {
+        if (this._searchIcon.icon == Icons.search) {
+          this._searchIcon = new Icon(Icons.close);
+          this._appBarTitle = new TextField(
+            controller: searchTextController,
+            decoration: new InputDecoration(
+              prefixIcon: new Icon(Icons.search),
+              hintText: 'Search...',
+            ),
+          );
+        } else {
+          this._searchIcon = new Icon(Icons.search);
+          this._appBarTitle = new Text(contactType + ' Contact');
+        }
+      });
+    }
+
+
+
+  var futurebuilder = new FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         print('Connection State: ' + snapshot.connectionState.toString());
         if(snapshot.hasData){
@@ -91,7 +114,14 @@ class _ContactScreenState extends State<ContactScreen> {
         label: Text('Add'),
       ),
       appBar: AppBar(
-        title: new Text(contactType + ' Contact'),
+        title: _appBarTitle,
+        actions: <Widget>[
+          IconButton(
+              icon: _searchIcon,
+              onPressed: () {
+                _searchPressed();
+              })
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -185,4 +215,6 @@ Future deleteContactFromDatabase(
   } else {
     Fluttertoast.showToast(msg: 'Error', backgroundColor: Colors.red);
   }
+
+
 }
