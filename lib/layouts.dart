@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'AddContactScreen.dart';
+import 'AdminContactsScreen.dart';
 import 'CategoryScreen.dart';
 import 'ContactScreen.dart';
 import 'DataClasses/ContactDatabase.dart';
@@ -59,6 +60,17 @@ Widget buildDrawer(BuildContext context) => Drawer(
                             categoryType: 'Product',
                             isAdmin: true,
                           )));
+                }),
+          ),
+          Container(
+            child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
+                title: Text('Contacts'),
+                onTap: () {
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => AdminContactsScreen(
+                        isAdmin: true,
+                      )));
                 }),
           ),
           buildMenuItemWithout('Report'),
