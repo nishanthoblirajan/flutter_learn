@@ -102,7 +102,6 @@ class _ContactScreenState extends State<ContactScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          /*TODO add new contact name*/
           Navigator.of(context).push(new MaterialPageRoute(
               builder: (context) =>
                   AddContactScreen(

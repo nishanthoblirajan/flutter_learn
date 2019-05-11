@@ -7,6 +7,7 @@ import 'package:hello_world/ContactScreen.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'AddContactScreen.dart';
 import 'DataClasses/ContactDatabase.dart';
 
 class AdminContactsScreen extends StatefulWidget {
@@ -26,6 +27,7 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
   Widget _appBarTitle;
   Icon _searchIcon = new Icon(Icons.search);
   String contactType;
+  var floatingButton;
 
   @override
   initState() {
@@ -34,6 +36,13 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     contactType = 'All';
     _appBarTitle = Text(contactType + ' Contacts');
     initSharedPrefs();
+    floatingButton = FloatingActionButton.extended(
+      onPressed: () async {
+        Fluttertoast.showToast(msg: 'Choose Customer Type');
+      },
+      icon: Icon(Icons.add),
+      label: Text('Add'),
+    );
     super.initState();
   }
 
@@ -49,6 +58,8 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+
     void _searchPressed() {
       setState(() {
         if (this._searchIcon.icon == Icons.search) {
@@ -112,6 +123,7 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     );
 
     return Scaffold(
+      floatingActionButton: floatingButton,
       appBar: AppBar(
         title: _appBarTitle,
         actions: <Widget>[
@@ -243,9 +255,32 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     QueryBuilder<ParseObject> queryBuilder;
 
     if (contactType == 'All') {
+      setState(() {
+        floatingButton = FloatingActionButton.extended(
+          onPressed: () async {
+            Fluttertoast.showToast(msg: 'Choose Customer Type');
+          },
+          icon: Icon(Icons.add),
+          label: Text('Add'),
+        );
+      });
       queryBuilder = QueryBuilder<ContactDatabase>(ContactDatabase())
         ..whereEqualTo(ContactDatabase.roCode, roCode);
     } else {
+      setState(() {
+        floatingButton = FloatingActionButton.extended(
+          onPressed: () async {
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (context) =>
+                    AddContactScreen(
+                      contactType: contactType,
+                      contactList: _contactDatabase,
+                    )));
+          },
+          icon: Icon(Icons.add),
+          label: Text('Add'),
+        );
+      });
       queryBuilder = QueryBuilder<ContactDatabase>(ContactDatabase())
         ..whereEqualTo(ContactDatabase.roCode, roCode)
         ..whereEqualTo(ContactDatabase.contactType, contactType);
