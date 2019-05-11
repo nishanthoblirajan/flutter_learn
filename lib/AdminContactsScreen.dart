@@ -216,16 +216,6 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
           children: <Widget>[
             ListTile(
               title: Text(_contactDatabase[index].contact_name),
-//        trailing: Row(
-//          children: <Widget>[
-//            Container(child: IconButton(icon: Icon(Icons.edit),onPressed: (){
-//
-//            },)),
-//            Container(child: IconButton(icon: Icon(Icons.delete),onPressed: (){
-//
-//            },)),
-//          ],
-//        ),
               onTap: () {
                 //TODO open contact name editing
               },
@@ -233,12 +223,20 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
           new Row(mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             new FlatButton(onPressed: (){}, child: new Text('Edit')),
-            new FlatButton(onPressed: (){}, child: new Text('Delete', style: new TextStyle(color:Colors.redAccent),)),
+            new FlatButton(onPressed: (){
+              /*TODOCompleted Implement Delete*/
+              deleteObjectFromDatabase(_contactDatabase[index]);
+            }, child: new Text('Delete', style: new TextStyle(color:Colors.redAccent),)),
           ],)],
         ),
       ));
     }
     return widgetLists;
+  }
+
+  deleteObjectFromDatabase(ParseObject object){
+    ParseObject deleteObject = object;
+    deleteObject.delete();
   }
 
   _query(String roCode, String contactType, String textSearch) async {
@@ -275,4 +273,5 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     }
     return queryBuilder.query();
   }
+
 }
