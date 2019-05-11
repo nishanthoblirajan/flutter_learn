@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     isAdmin = widget.isAdmin;
     searchTextController.text = "";
     contactType = 'All';
-    _appBarTitle = new Text(contactType+' Contacts');
+    _appBarTitle = Text(contactType+' Contacts');
     initSharedPrefs();
     super.initState();
   }
@@ -68,15 +69,40 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
       });
     }
 
-    var futurebuilder = new FutureBuilder(
+    var headingBuilder = new FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         print('Connection State: ' + snapshot.connectionState.toString());
         if(snapshot.hasData){
           if(snapshot.data!=null){
             print('Im Inside');
             return ListView(
-                scrollDirection: Axis.horizontal,children:
+                shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+                children:
             _getData(snapshot));
+          }else{
+            return Center(
+              child: new CircularProgressIndicator(),
+            );
+          }
+        }else{
+          return Center(
+            child: new CircularProgressIndicator(),
+          );
+        }
+      },
+      future: _query(roCode, contactType, searchTextController.text),
+    );
+
+    var listBuilder = new FutureBuilder(
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        print('Connection State: ' + snapshot.connectionState.toString());
+        if(snapshot.hasData){
+          if(snapshot.data!=null){
+            print('Im Inside');
+            return ListView(
+                children:
+                _getList(snapshot));
           }else{
             return Center(
               child: new CircularProgressIndicator(),
@@ -107,7 +133,8 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
         child: Container(
           child: new Column(
             children: <Widget>[
-              Expanded(child: futurebuilder),
+              Flexible(child: headingBuilder),
+              Expanded(child: listBuilder)
             ],
           ),
         ),
@@ -115,8 +142,40 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     );
   }
   List<ContactDatabase> _contactDatabase = [];
+  List<ContactDatabase> _initialContactDatabase = [];
 
   List<Widget> _getData(AsyncSnapshot snapshot) {
+    List<Widget> widgetLists = new List();
+
+    /*Hashset the list*/
+    List<String> contactTypeList = new List();
+    for(int i=0;i<_initialContactDatabase.length;i++){
+      contactTypeList.add(_initialContactDatabase[i].contact_type);
+    }
+    Set<String> stringSet = new LinkedHashSet<String>();
+    stringSet.addAll(contactTypeList);
+    contactTypeList.clear();
+    contactTypeList.addAll(stringSet);
+
+
+    for (int index = 0; index < contactTypeList.length; index++) {
+      widgetLists.add(Container(
+        width: 120,
+        height: 100,
+        child: ListTile(
+          title: Text(contactTypeList[index]),
+          onTap: () {
+              setState(() {
+                contactType=contactTypeList[index];
+              });
+            },
+        ),
+      ));
+    }
+    return widgetLists;
+  }
+
+  List<Widget> _getList(AsyncSnapshot snapshot) {
     ParseResponse apiResponse = snapshot.data;
     if (apiResponse.success && apiResponse.result != null) {
       final List<ParseObject> listFromApi = apiResponse.result;
@@ -131,24 +190,22 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     }
 
     List<Widget> widgetLists = new List();
+
+
+
     for (int index = 0; index < _contactDatabase.length; index++) {
       widgetLists.add(Container(
         width: 160.0,
-        height: 120.0,
         child: ListTile(
           title: Text(_contactDatabase[index].contact_name),
           onTap: () {
-            setState(() {
-              contactType=_contactDatabase[index].contact_type;
-            });
+            //TODO open contact name editing
           },
         ),
       ));
     }
     return widgetLists;
   }
-
-
   _query(String roCode, String contactType, String textSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
 
@@ -165,6 +222,21 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     } else {
       queryBuilder = queryBuilder..whereContains(
             ContactDatabase.contactName, textSearch);
+    }
+
+    QueryBuilder<ParseObject> allQueriesForContactTypeList =  QueryBuilder<ContactDatabase>(ContactDatabase())
+      ..whereEqualTo(ContactDatabase.roCode, roCode);
+    ParseResponse apiResponse = await allQueriesForContactTypeList.query();
+    if (apiResponse.success && apiResponse.result != null) {
+      final List<ParseObject> listFromApi = apiResponse.result;
+      _contactDatabase = new List();
+      for (int i = 0; i < listFromApi.length; i++) {
+        Map output = json.decode(listFromApi[i].toString());
+        ContactDatabase contactDatabase =
+        new ContactDatabase().fromJson(output);
+        print(contactDatabase.contact_name);
+        _initialContactDatabase.add(contactDatabase);
+      }
     }
     return queryBuilder.query();
   }
