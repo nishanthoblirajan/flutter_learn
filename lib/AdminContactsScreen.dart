@@ -153,7 +153,23 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     stringSet.addAll(contactTypeList);
     contactTypeList.clear();
     contactTypeList.addAll(stringSet);
-
+    widgetLists.add(Card(
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            contactType = 'All';
+          });
+        },
+        child: Container(
+          width: 160,
+          child: Center(
+              child: Text(
+                'All',
+                textAlign: TextAlign.center,
+              )),
+        ),
+      ),
+    ));
     for (int index = 0; index < contactTypeList.length; index++) {
       widgetLists.add(
         Card(
@@ -195,11 +211,31 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     List<Widget> widgetLists = new List();
 
     for (int index = 0; index < _contactDatabase.length; index++) {
-      widgetLists.add(ListTile(
-        title: Text(_contactDatabase[index].contact_name),
-        onTap: () {
-          //TODO open contact name editing
-        },
+      widgetLists.add(Card(
+        child: Column(
+          children: <Widget>[
+            ListTile(
+              title: Text(_contactDatabase[index].contact_name),
+//        trailing: Row(
+//          children: <Widget>[
+//            Container(child: IconButton(icon: Icon(Icons.edit),onPressed: (){
+//
+//            },)),
+//            Container(child: IconButton(icon: Icon(Icons.delete),onPressed: (){
+//
+//            },)),
+//          ],
+//        ),
+              onTap: () {
+                //TODO open contact name editing
+              },
+            ),
+          new Row(mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            new FlatButton(onPressed: (){}, child: new Text('Edit')),
+            new FlatButton(onPressed: (){}, child: new Text('Delete', style: new TextStyle(color:Colors.redAccent),)),
+          ],)],
+        ),
       ));
     }
     return widgetLists;
