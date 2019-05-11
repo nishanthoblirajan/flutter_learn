@@ -234,7 +234,9 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
             ),
           new Row(mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            new FlatButton(onPressed: (){}, child: new Text('Edit')),
+            new FlatButton(onPressed: (){
+              editContact(_contactDatabase[index]);
+            }, child: new Text('Edit')),
             new FlatButton(onPressed: (){
               /*TODOCompleted Implement Delete*/
               deleteObjectFromDatabase(_contactDatabase[index]);
@@ -249,6 +251,16 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
   deleteObjectFromDatabase(ParseObject object){
     ParseObject deleteObject = object;
     deleteObject.delete();
+  }
+  editContact(ContactDatabase contactDatabase){
+    Navigator.of(context).push(new MaterialPageRoute(
+        builder: (context) =>
+            AddContactScreen(
+              contactType: contactType,
+              contactList: _contactDatabase,
+              isEdit: true,
+              contactToEdit: contactDatabase,
+            )));
   }
 
   _query(String roCode, String contactType, String textSearch) async {
