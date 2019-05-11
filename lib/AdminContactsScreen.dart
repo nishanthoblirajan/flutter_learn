@@ -151,20 +151,10 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
   }
 
   List<ContactDatabase> _contactDatabase = [];
-  List<ContactDatabase> _initialContactDatabase = [];
 
   List<Widget> _getData(AsyncSnapshot snapshot) {
     List<Widget> widgetLists = new List();
 
-    /*Hashset the list*/
-    List<String> contactTypeList = new List();
-    for (int i = 0; i < _initialContactDatabase.length; i++) {
-      contactTypeList.add(_initialContactDatabase[i].contact_type);
-    }
-    Set<String> stringSet = new LinkedHashSet<String>();
-    stringSet.addAll(contactTypeList);
-    contactTypeList.clear();
-    contactTypeList.addAll(stringSet);
     widgetLists.add(Card(
       child: InkWell(
         onTap: () {
@@ -182,27 +172,40 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
         ),
       ),
     ));
-    for (int index = 0; index < contactTypeList.length; index++) {
-      widgetLists.add(
-        Card(
-          child: InkWell(
-            onTap: () {
-              setState(() {
-                contactType = contactTypeList[index];
-              });
-            },
-            child: Container(
-              width: 160,
-              child: Center(
-                  child: Text(
-                contactTypeList[index],
+    widgetLists.add(Card(
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            contactType = 'Customer';
+          });
+        },
+        child: Container(
+          width: 160,
+          child: Center(
+              child: Text(
+                'Customer',
                 textAlign: TextAlign.center,
               )),
-            ),
-          ),
         ),
-      );
-    }
+      ),
+    ));
+    widgetLists.add(Card(
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            contactType = 'Vendor';
+          });
+        },
+        child: Container(
+          width: 160,
+          child: Center(
+              child: Text(
+                'Vendor',
+                textAlign: TextAlign.center,
+              )),
+        ),
+      ),
+    ));
     return widgetLists;
   }
 
@@ -238,8 +241,30 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
               editContact(_contactDatabase[index]);
             }, child: new Text('Edit')),
             new FlatButton(onPressed: (){
+
+              showDialog(context: context,builder: (BuildContext context) {
+                return new AlertDialog(
+                  title: new Text("Do you want to delete?"),
+                  content: new Text("This cannot be undone"),
+                  actions: <Widget>[
+                    new FlatButton(
+                      child: new Text("No"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    // usually buttons at the bottom of the dialog
+                    new FlatButton(
+                      child: new Text("Yes"),
+                      onPressed: () {
+                        deleteObjectFromDatabase(_contactDatabase[index]);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                );
+              });
               /*TODOCompleted Implement Delete*/
-              deleteObjectFromDatabase(_contactDatabase[index]);
             }, child: new Text('Delete', style: new TextStyle(color:Colors.redAccent),)),
           ],)],
         ),
@@ -248,9 +273,14 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     return widgetLists;
   }
 
-  deleteObjectFromDatabase(ParseObject object){
+  deleteObjectFromDatabase(ParseObject object) async {
     ParseObject deleteObject = object;
-    deleteObject.delete();
+    var delete = await deleteObject.delete();
+    if(delete.success){
+      Fluttertoast.showToast(msg: 'Deleted');
+    }else{
+      Fluttertoast.showToast(msg: 'Unable to Delete. Contact Developer');
+    }
   }
   editContact(ContactDatabase contactDatabase){
     Navigator.of(context).push(new MaterialPageRoute(
@@ -315,7 +345,6 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
         ContactDatabase contactDatabase =
             new ContactDatabase().fromJson(output);
         print(contactDatabase.contact_name);
-        _initialContactDatabase.add(contactDatabase);
       }
     }
     return queryBuilder.query();

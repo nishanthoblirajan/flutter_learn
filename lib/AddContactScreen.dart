@@ -70,6 +70,8 @@ class _AddContactScreenState extends State<AddContactScreen> {
         contactPhoneNumberController.text = contactDatabase.contact_phone;
         contactGSTController.text = contactDatabase.contact_gst;
       });
+    }else{
+      isEdit=false;
     }
   }
 
@@ -147,9 +149,6 @@ class _AddContactScreenState extends State<AddContactScreen> {
       String roCode, String contactType, String contactName) async {
     print('Add Contact' + roCode + " " + contactType + " " + contactName);
     ContactDatabase contactDatabase = new ContactDatabase();
-    if (isEdit) {
-      contactDatabase.set('objectId', contactToEdit.get('objectId'));
-    }
     contactDatabase.ro_code = roCode;
     contactDatabase.contact_type = contactType;
     contactDatabase.contact_business = contactBusinessNameController.text;
