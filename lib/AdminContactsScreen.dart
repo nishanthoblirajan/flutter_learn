@@ -11,29 +11,28 @@ import 'DataClasses/ContactDatabase.dart';
 
 class AdminContactsScreen extends StatefulWidget {
   bool isAdmin;
+
   @override
   _AdminContactsScreenState createState() => _AdminContactsScreenState();
 
-  AdminContactsScreen({Key key,  @required this.isAdmin}) : super(key: key);
-
-
+  AdminContactsScreen({Key key, @required this.isAdmin}) : super(key: key);
 }
 
 class _AdminContactsScreenState extends State<AdminContactsScreen> {
-
   bool isAdmin;
 
   TextEditingController searchTextController = new TextEditingController();
 
   Widget _appBarTitle;
   Icon _searchIcon = new Icon(Icons.search);
-    String contactType;
+  String contactType;
+
   @override
   initState() {
     isAdmin = widget.isAdmin;
     searchTextController.text = "";
     contactType = 'All';
-    _appBarTitle = Text(contactType+' Contacts');
+    _appBarTitle = Text(contactType + ' Contacts');
     initSharedPrefs();
     super.initState();
   }
@@ -50,7 +49,6 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     void _searchPressed() {
       setState(() {
         if (this._searchIcon.icon == Icons.search) {
@@ -72,20 +70,17 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     var headingBuilder = new FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         print('Connection State: ' + snapshot.connectionState.toString());
-        if(snapshot.hasData){
-          if(snapshot.data!=null){
+        if (snapshot.hasData) {
+          if (snapshot.data != null) {
             print('Im Inside');
             return ListView(
-                shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-                children:
-            _getData(snapshot));
-          }else{
+                scrollDirection: Axis.horizontal, children: _getData(snapshot));
+          } else {
             return Center(
               child: new CircularProgressIndicator(),
             );
           }
-        }else{
+        } else {
           return Center(
             child: new CircularProgressIndicator(),
           );
@@ -94,21 +89,20 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
       future: _query(roCode, contactType, searchTextController.text),
     );
 
+
     var listBuilder = new FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         print('Connection State: ' + snapshot.connectionState.toString());
-        if(snapshot.hasData){
-          if(snapshot.data!=null){
+        if (snapshot.hasData) {
+          if (snapshot.data != null) {
             print('Im Inside');
-            return ListView(
-                children:
-                _getList(snapshot));
-          }else{
+            return ListView(children: _getList(snapshot));
+          } else {
             return Center(
               child: new CircularProgressIndicator(),
             );
           }
-        }else{
+        } else {
           return Center(
             child: new CircularProgressIndicator(),
           );
@@ -132,8 +126,10 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
         padding: const EdgeInsets.all(12.0),
         child: Container(
           child: new Column(
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Flexible(child: headingBuilder),
+              Text(contactType),
+              Container(height: 50, child: headingBuilder),
               Expanded(child: listBuilder)
             ],
           ),
@@ -141,6 +137,7 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
       ),
     );
   }
+
   List<ContactDatabase> _contactDatabase = [];
   List<ContactDatabase> _initialContactDatabase = [];
 
@@ -149,7 +146,7 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
 
     /*Hashset the list*/
     List<String> contactTypeList = new List();
-    for(int i=0;i<_initialContactDatabase.length;i++){
+    for (int i = 0; i < _initialContactDatabase.length; i++) {
       contactTypeList.add(_initialContactDatabase[i].contact_type);
     }
     Set<String> stringSet = new LinkedHashSet<String>();
@@ -157,20 +154,26 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
     contactTypeList.clear();
     contactTypeList.addAll(stringSet);
 
-
     for (int index = 0; index < contactTypeList.length; index++) {
-      widgetLists.add(Container(
-        width: 120,
-        height: 100,
-        child: ListTile(
-          title: Text(contactTypeList[index]),
-          onTap: () {
+      widgetLists.add(
+        Card(
+          child: InkWell(
+            onTap: () {
               setState(() {
-                contactType=contactTypeList[index];
+                contactType = contactTypeList[index];
               });
             },
+            child: Container(
+              width: 160,
+              child: Center(
+                  child: Text(
+                contactTypeList[index],
+                textAlign: TextAlign.center,
+              )),
+            ),
+          ),
         ),
-      ));
+      );
     }
     return widgetLists;
   }
@@ -183,7 +186,7 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
       for (int i = 0; i < listFromApi.length; i++) {
         Map output = json.decode(listFromApi[i].toString());
         ContactDatabase contactDatabase =
-        new ContactDatabase().fromJson(output);
+            new ContactDatabase().fromJson(output);
         print(contactDatabase.contact_name);
         _contactDatabase.add(contactDatabase);
       }
@@ -191,41 +194,37 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
 
     List<Widget> widgetLists = new List();
 
-
-
     for (int index = 0; index < _contactDatabase.length; index++) {
-      widgetLists.add(Container(
-        width: 160.0,
-        child: ListTile(
-          title: Text(_contactDatabase[index].contact_name),
-          onTap: () {
-            //TODO open contact name editing
-          },
-        ),
+      widgetLists.add(ListTile(
+        title: Text(_contactDatabase[index].contact_name),
+        onTap: () {
+          //TODO open contact name editing
+        },
       ));
     }
     return widgetLists;
   }
+
   _query(String roCode, String contactType, String textSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
 
-    if(contactType=='All'){
+    if (contactType == 'All') {
       queryBuilder = QueryBuilder<ContactDatabase>(ContactDatabase())
         ..whereEqualTo(ContactDatabase.roCode, roCode);
-    }else{
+    } else {
       queryBuilder = QueryBuilder<ContactDatabase>(ContactDatabase())
-        ..whereEqualTo(ContactDatabase.roCode, roCode)..whereEqualTo(
-            ContactDatabase.contactType, contactType);
+        ..whereEqualTo(ContactDatabase.roCode, roCode)
+        ..whereEqualTo(ContactDatabase.contactType, contactType);
     }
     if (textSearch == "") {
-
     } else {
-      queryBuilder = queryBuilder..whereContains(
-            ContactDatabase.contactName, textSearch);
+      queryBuilder = queryBuilder
+        ..whereContains(ContactDatabase.contactName, textSearch);
     }
 
-    QueryBuilder<ParseObject> allQueriesForContactTypeList =  QueryBuilder<ContactDatabase>(ContactDatabase())
-      ..whereEqualTo(ContactDatabase.roCode, roCode);
+    QueryBuilder<ParseObject> allQueriesForContactTypeList =
+        QueryBuilder<ContactDatabase>(ContactDatabase())
+          ..whereEqualTo(ContactDatabase.roCode, roCode);
     ParseResponse apiResponse = await allQueriesForContactTypeList.query();
     if (apiResponse.success && apiResponse.result != null) {
       final List<ParseObject> listFromApi = apiResponse.result;
@@ -233,7 +232,7 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
       for (int i = 0; i < listFromApi.length; i++) {
         Map output = json.decode(listFromApi[i].toString());
         ContactDatabase contactDatabase =
-        new ContactDatabase().fromJson(output);
+            new ContactDatabase().fromJson(output);
         print(contactDatabase.contact_name);
         _initialContactDatabase.add(contactDatabase);
       }
