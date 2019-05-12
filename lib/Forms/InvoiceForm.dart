@@ -40,6 +40,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
       });
     });
   }
+
   DateTime selectedDate = DateTime.now();
 
   Future<Null> _selectDate(BuildContext context) async {
@@ -53,6 +54,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
         selectedDate = picked;
       });
   }
+
   @override
   initState() {
     invoiceNumber = 'N/A';
@@ -76,7 +78,11 @@ class _InvoiceFormState extends State<InvoiceForm> {
                 onPressed: () => _selectDate(context),
                 child: Text('Select date'),
               ),
-              Expanded(child: Text("${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",textAlign: TextAlign.center,)),
+              Expanded(
+                  child: Text(
+                "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                textAlign: TextAlign.center,
+              )),
             ],
           ),
           new TextFormField(
@@ -105,6 +111,10 @@ class _InvoiceFormState extends State<InvoiceForm> {
             child: new Text('Choose'),
           ),
 
+          new RaisedButton(onPressed: (){
+
+          },
+          child: new Text(('Add Products')),),
         ],
       ),
     );

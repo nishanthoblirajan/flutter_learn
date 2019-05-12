@@ -14,6 +14,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 
 class productscreen extends StatefulWidget {
+  /*TODO implement Add Products from InvoiceForm*/
+  bool fromInvoice;
   @override
   _productscreenState createState() => _productscreenState();
 }
