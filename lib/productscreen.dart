@@ -16,21 +16,26 @@ import 'package:flutter/cupertino.dart';
 class productscreen extends StatefulWidget {
   /*TODO implement Add Products from InvoiceForm*/
   bool fromInvoice;
+
   @override
   _productscreenState createState() => _productscreenState();
+
+  productscreen({Key key, this.fromInvoice}) : super(key: key);
 }
 
-/*TODO show all the products added below the Add New Products Button*/
 
 class _productscreenState extends State<productscreen> {
   TextEditingController searchTextController = new TextEditingController();
   TextEditingController barcodeTextController = new TextEditingController();
 
   String scanText;
+  bool fromInvoice;
 
   @override
   initState() {
-    scanText='Scan';
+    fromInvoice = widget.fromInvoice;
+
+    scanText = 'Scan';
     searchTextController.text = "";
     barcodeTextController.text = "";
     initSharedPrefs();
@@ -54,7 +59,6 @@ class _productscreenState extends State<productscreen> {
 
   @override
   Widget build(BuildContext context) {
-
     /*change only the future*/
     var futurebuilder = new FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -62,8 +66,7 @@ class _productscreenState extends State<productscreen> {
         if (snapshot.hasData) {
           if (snapshot.data != null) {
             print('Im Inside');
-            return ListView(children:
-            _getData(snapshot));
+            return ListView(children: _getData(snapshot));
           } else {
             return Center(
               child: new CircularProgressIndicator(),
@@ -78,8 +81,6 @@ class _productscreenState extends State<productscreen> {
       future:
           _query(roCode, searchTextController.text, barcodeTextController.text),
     );
-
-
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
@@ -117,8 +118,7 @@ class _productscreenState extends State<productscreen> {
                   ),
                 ],
               ),
-              Expanded(
-                  child: futurebuilder),
+              Expanded(child: futurebuilder),
             ],
           ),
         ),
@@ -138,7 +138,7 @@ class _productscreenState extends State<productscreen> {
         print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
         ProductDatabase productDatabase =
-        new ProductDatabase().fromJson(output);
+            new ProductDatabase().fromJson(output);
         print(productDatabase.name);
         _productDatabase.add(productDatabase);
       }
@@ -147,20 +147,26 @@ class _productscreenState extends State<productscreen> {
     List<Widget> widgetLists = new List();
     for (int index = 0; index < _productDatabase.length; index++) {
       widgetLists.add(ListTile(
-        onTap: () =>
-            _showDialog(context, _productDatabase[index]),
+        onTap: () {
+          if (fromInvoice) {
+            Navigator.of(context).pop({
+              'product_selection':
+              _productDatabase[index]
+            });
+          } else {
+            _showDialog(context, _productDatabase[index]);
+          }
+        },
         title: Text(_productDatabase[index].name),
         subtitle: Text(" Quantity: " +
             _productDatabase[index].quantity +
             " SKU: " +
             _productDatabase[index].sku),
-        trailing: Text(
-            "\u20B9" + _productDatabase[index].salePrice),
+        trailing: Text("\u20B9" + _productDatabase[index].salePrice),
       ));
     }
     return widgetLists;
   }
-
 
   _query(String roCode, String textSearch, String barCodeSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
@@ -210,11 +216,11 @@ class _productscreenState extends State<productscreen> {
 
   /*TODO test barcode scanning*/
   Future _barcodeScanning() async {
-    if(scanText!='Clear'){
+    if (scanText != 'Clear') {
       try {
         String barcode = await BarcodeScanner.scan();
         setState(() {
-          scanText='Clear';
+          scanText = 'Clear';
           barcodeTextController.text = barcode;
         });
         Fluttertoast.showToast(msg: "Searching Barcode " + barcode);
@@ -222,14 +228,13 @@ class _productscreenState extends State<productscreen> {
         if (e.code == BarcodeScanner.CameraAccessDenied) {
         } else {}
       } on FormatException {} catch (e) {}
-    }else{
+    } else {
       setState(() {
-        scanText='Scan';
-        barcodeTextController.text='';
+        scanText = 'Scan';
+        barcodeTextController.text = '';
         Fluttertoast.showToast(msg: 'Cleared');
       });
     }
-
   }
 
   void _searchPressed() {

@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hello_world/ContactScreen.dart';
+import 'package:hello_world/DataClasses/ProductDatabase.dart';
 import 'package:hello_world/DataClasses/RODatabase.dart';
+import 'package:hello_world/productscreen.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -110,16 +112,47 @@ class _InvoiceFormState extends State<InvoiceForm> {
             },
             child: new Text('Choose'),
           ),
+          new RaisedButton(
+            onPressed: () async {
+              Map results =
+                  await Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => productscreen(
+                            fromInvoice: true,
+                          )));
 
-          new RaisedButton(onPressed: (){
+              if (results != null && results.containsKey('product_selection')) {
+                setState(() {
+                  _selectedProductDatabase.add(results['product_selection']);
+                });
+              }
+            },
+            child: new Text(('Add Products')),
+          ),
+          /*TODO implement data table calculation*/
+          DataTable(columns: <DataColumn>[
+            DataColumn(label: Text('Name')),
+            DataColumn(label: Text('Quantity')),
+            DataColumn(label: Text('Tax')),
+            DataColumn(label: Text('MRP')),
+            DataColumn(label: Text('Total')),
+          ], rows: List.generate(_selectedProductDatabase.length, (index){
+            return DataRow(cells: <DataCell>[
+              DataCell(Text(_selectedProductDatabase[index].name)),
+              DataCell(Text('1')),
+              DataCell(Text(_selectedProductDatabase[index].taxName)),
+              DataCell(Text(_selectedProductDatabase[index].salePrice)),
+              DataCell(Text('Total')),
+            ]);
+          })
 
-          },
-          child: new Text(('Add Products')),),
+          )
         ],
       ),
     );
   }
 
+  List<ProductDatabase> _selectedProductDatabase = [];
+  List<int> _quantity = [];
   List<RODatabase> _roList = [];
 
   Future<List<RODatabase>> _getRODatabase(String roCode) async {
@@ -138,5 +171,18 @@ class _InvoiceFormState extends State<InvoiceForm> {
       }
     }
     return roDatabaseList;
+  }
+
+
+  String calculateTotal(ProductDatabase selectedProductDatabase) {
+    int quantity = 1;
+    double price;
+    double total;
+//    if(selectedProductDatabase.salePrice!=null){
+//      price = double.parse(selectedProductDatabase.salePrice);
+//    }
+    price = 0;
+    total = price*quantity;
+    return 'Total';
   }
 }
