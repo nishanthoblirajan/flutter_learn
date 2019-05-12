@@ -40,7 +40,19 @@ class _InvoiceFormState extends State<InvoiceForm> {
       });
     });
   }
+  DateTime selectedDate = DateTime.now();
 
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
+  }
   @override
   initState() {
     invoiceNumber = 'N/A';
@@ -57,6 +69,16 @@ class _InvoiceFormState extends State<InvoiceForm> {
       child: Column(
         children: <Widget>[
           new Text('Invoice #' + invoiceNumber),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              RaisedButton(
+                onPressed: () => _selectDate(context),
+                child: Text('Select date'),
+              ),
+              Expanded(child: Text("${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",textAlign: TextAlign.center,)),
+            ],
+          ),
           new TextFormField(
             controller: contactNameController,
             decoration: new InputDecoration(labelText: 'Contact Name'),
@@ -81,7 +103,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
               }
             },
             child: new Text('Choose'),
-          )
+          ),
+
         ],
       ),
     );
