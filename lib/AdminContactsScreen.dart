@@ -168,6 +168,7 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
               child: Text(
                 'All',
                 textAlign: TextAlign.center,
+
               )),
         ),
       ),
