@@ -60,6 +60,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
   @override
   initState() {
     invoiceNumber = 'N/A';
+    _quantity = new List();
+    _selectedProductDatabase = new List();
     initSharedPrefs();
     initRODatabase();
     super.initState();
@@ -72,6 +74,10 @@ class _InvoiceFormState extends State<InvoiceForm> {
     return Container(
       child: Column(
         children: <Widget>[
+          Text(
+            calculateListTotal(_quantity, _selectedProductDatabase),
+            style: TextStyle(fontSize: 20),
+          ),
           new Text('Invoice #' + invoiceNumber),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -121,8 +127,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
                           )));
 
               if (results != null && results.containsKey('product_selection')) {
+                getProductFromID(results['product_selection']);
                 setState(() {
-                  getProductFromID(results['product_selection']);
                   _quantity.add(results['quantity_selection']);
                 });
               }
@@ -130,17 +136,42 @@ class _InvoiceFormState extends State<InvoiceForm> {
             child: new Text(('Add Products')),
           ),
           /*TODO implement data table calculation*/
-          Expanded(
+          Flexible(
             child: DataTable(
                 columns: <DataColumn>[
-                  DataColumn(label: Text('Name')),
-                  DataColumn(label: Text('Quantity')),
+                  DataColumn(
+                      label: Expanded(
+                    child: Container(child: Text('Name')),
+                    flex: 2,
+                  )),
+                  DataColumn(
+                      label: Expanded(
+                          child: Container(child: Text('Quantity')), flex: 1)),
 //              DataColumn(label: Text('Tax')),
-                  DataColumn(label: Text('MRP')),
-                  DataColumn(label: Text('Total')),
+                  DataColumn(
+                      label: Expanded(
+                    child: Container(child: Text('MRP')),
+                    flex: 1,
+                  )),
+                  DataColumn(
+                      label: Expanded(
+                    child: Container(child: Text('Total')),
+                    flex: 3,
+                  )),
                 ],
+                /*TODO error
+                * Another exception was thrown: RangeError (index): Invalid value: Not in range 0..2, inclusive: 3*/
                 rows: List.generate(_selectedProductDatabase.length, (index) {
                   return DataRow(cells: <DataCell>[
+//                    DataCell(IconButton(
+//                        icon: Icon(Icons.clear),
+//                        onPressed: () {
+//                          setState(() {
+//                            _selectedProductDatabase.removeAt(index);
+//
+//                            _quantity.removeAt(index);
+//                          });
+//                        })),
                     DataCell(Text(_selectedProductDatabase[index].name)),
                     DataCell(Text(_quantity[index])),
 //                DataCell(Text(_selectedProductDatabase[index].taxName)),
@@ -150,7 +181,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
                   ]);
                 })),
           ),
-          Text(calculateListTotal(_quantity, _selectedProductDatabase))
         ],
       ),
     );
