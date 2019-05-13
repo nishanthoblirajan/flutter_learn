@@ -23,7 +23,6 @@ class productscreen extends StatefulWidget {
   productscreen({Key key, this.fromInvoice}) : super(key: key);
 }
 
-
 class _productscreenState extends State<productscreen> {
   TextEditingController searchTextController = new TextEditingController();
   TextEditingController barcodeTextController = new TextEditingController();
@@ -149,10 +148,9 @@ class _productscreenState extends State<productscreen> {
       widgetLists.add(ListTile(
         onTap: () {
           if (fromInvoice) {
-            Navigator.of(context).pop({
-              'product_selection':
-              _productDatabase[index]
-            });
+            _displayQuantityDialog(context,index);
+
+
           } else {
             _showDialog(context, _productDatabase[index]);
           }
@@ -209,6 +207,37 @@ class _productscreenState extends State<productscreen> {
                     Navigator.of(context).pop();
                   },
                   child: new Text("Close"))
+            ],
+          );
+        });
+  }
+
+  TextEditingController quantityController = new TextEditingController();
+
+  _displayQuantityDialog(BuildContext context,int index) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Quantity'),
+            content: TextField(
+              controller: quantityController,
+              decoration: InputDecoration(hintText: "Enter Quantity"),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              new FlatButton(
+                child: new Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context)
+                      .pop({'product_selection': _productDatabase[index].objectId,'quantity_selection':quantityController.text});                },
+              )
             ],
           );
         });

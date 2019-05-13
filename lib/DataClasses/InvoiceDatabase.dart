@@ -15,11 +15,13 @@ class InvoiceDatabase extends ParseObject implements ParseCloneable {
   String get ro_code => get<String>(roCode);
   set ro_code(String ro_code) => set<String>(roCode, ro_code);
 
+  static const String productID = 'product_id';
+  String get product_id => get<String>(productID);
+  set product_id(String product_id) => set<String>(productID, product_id);
 
-
-
-
-
+  static const String productQuantity = 'product_quantity';
+  String get product_quantity => get<String>(productQuantity);
+  set product_quantity(String product_quantity) => set<String>(productQuantity, product_quantity);
 
 
 }

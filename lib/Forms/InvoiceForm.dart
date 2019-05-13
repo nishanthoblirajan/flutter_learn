@@ -122,37 +122,53 @@ class _InvoiceFormState extends State<InvoiceForm> {
 
               if (results != null && results.containsKey('product_selection')) {
                 setState(() {
-                  _selectedProductDatabase.add(results['product_selection']);
+                  getProductFromID(results['product_selection']);
+                  _quantity.add(results['quantity_selection']);
                 });
               }
             },
             child: new Text(('Add Products')),
           ),
           /*TODO implement data table calculation*/
-          DataTable(columns: <DataColumn>[
-            DataColumn(label: Text('Name')),
-            DataColumn(label: Text('Quantity')),
-            DataColumn(label: Text('Tax')),
-            DataColumn(label: Text('MRP')),
-            DataColumn(label: Text('Total')),
-          ], rows: List.generate(_selectedProductDatabase.length, (index){
-            return DataRow(cells: <DataCell>[
-              DataCell(Text(_selectedProductDatabase[index].name)),
-              DataCell(Text('1')),
-              DataCell(Text(_selectedProductDatabase[index].taxName)),
-              DataCell(Text(_selectedProductDatabase[index].salePrice)),
-              DataCell(Text('Total')),
-            ]);
-          })
+          Container(
+            child: DataTable(columns: <DataColumn>[
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('Quantity')),
+//              DataColumn(label: Text('Tax')),
+              DataColumn(label: Text('MRP')),
+              DataColumn(label: Text('Total')),
+            ], rows: List.generate(_selectedProductDatabase.length, (index){
+              return DataRow(cells: <DataCell>[
+                DataCell(Text(_selectedProductDatabase[index].name)),
+                DataCell(Text(_quantity[index])),
+//                DataCell(Text(_selectedProductDatabase[index].taxName)),
+                DataCell(Text(_selectedProductDatabase[index].salePrice)),
+                DataCell(calculateTotal(_quantity[index],_selectedProductDatabase[index].salePrice)),
+              ]);
+            })
 
+            ),
           )
         ],
       ),
     );
   }
 
+  Future<void> getProductFromID(String objectID) async {
+    ParseResponse apiResponse = await ProductDatabase().getObject(objectID);
+
+    if (apiResponse.success && apiResponse.count > 0) {
+      ProductDatabase productDatabase = apiResponse.result;
+      setState(() {
+      _selectedProductDatabase.add(productDatabase);
+      });
+      return productDatabase;
+    } else {
+      print(keyAppName + ': ' + apiResponse.error.message);
+    }
+  }
   List<ProductDatabase> _selectedProductDatabase = [];
-  List<int> _quantity = [];
+  List<String> _quantity = [];
   List<RODatabase> _roList = [];
 
   Future<List<RODatabase>> _getRODatabase(String roCode) async {
@@ -174,15 +190,12 @@ class _InvoiceFormState extends State<InvoiceForm> {
   }
 
 
-  String calculateTotal(ProductDatabase selectedProductDatabase) {
-    int quantity = 1;
-    double price;
-    double total;
-//    if(selectedProductDatabase.salePrice!=null){
-//      price = double.parse(selectedProductDatabase.salePrice);
-//    }
-    price = 0;
-    total = price*quantity;
-    return 'Total';
+  /*TODO add rupee symbol and finish InvoiceDatabase*/
+  Widget calculateTotal(String quantity, String salePrice) {
+    double doubleQuantity = double.parse(quantity);
+    double doubleSalePrice = double.parse(salePrice);
+    double total = doubleQuantity*doubleSalePrice;
+    return Text('$total');
   }
+
 }
