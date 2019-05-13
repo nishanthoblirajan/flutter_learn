@@ -173,7 +173,7 @@ class _ContactScreenState extends State<ContactScreen> {
               _contactDatabase[index].contact_name);
           Navigator.of(context).pop({
             'contact_selection':
-            _contactDatabase[index].contact_name
+            _contactDatabase[index].objectId
           });
         },
       ));

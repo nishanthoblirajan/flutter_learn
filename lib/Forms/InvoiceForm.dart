@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hello_world/ContactScreen.dart';
+import 'package:hello_world/DataClasses/ContactDatabase.dart';
+import 'package:hello_world/DataClasses/InvoiceDatabase.dart';
 import 'package:hello_world/DataClasses/ProductDatabase.dart';
 import 'package:hello_world/DataClasses/RODatabase.dart';
 import 'package:hello_world/productscreen.dart';
@@ -112,7 +114,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
 
               if (results != null && results.containsKey('contact_selection')) {
                 setState(() {
-                  contactNameController.text = results['contact_selection'];
+                  getContactFromID(results['contact_selection']);
                 });
               }
             },
@@ -181,6 +183,24 @@ class _InvoiceFormState extends State<InvoiceForm> {
                   ]);
                 })),
           ),
+          new RaisedButton(child:Text('Generate'),onPressed: () async {
+            /*This is using the ProductDatabase and not the ObjectId*/
+            /*The invoice database saves the product and contacts using their objectIds*/
+            for(int i=0;i<_selectedProductDatabase.length;i++){
+              InvoiceDatabase invoiceDatabase = new InvoiceDatabase();
+              invoiceDatabase.ro_code=roCode;
+              invoiceDatabase.invoice_number=invoiceNumber;
+              invoiceDatabase.contact_id=invoiceContact.objectId;
+              invoiceDatabase.product_id=_selectedProductDatabase[i].objectId;
+              invoiceDatabase.product_quantity=_quantity[i];
+              ParseResponse apiResponse = await invoiceDatabase.save();
+              if(apiResponse.success){
+                Fluttertoast.showToast(msg: 'Saved');
+                Navigator.pop(context);
+              }
+
+            }
+          }),
         ],
       ),
     );
@@ -200,9 +220,24 @@ class _InvoiceFormState extends State<InvoiceForm> {
     }
   }
 
+  Future<void> getContactFromID(String objectID) async {
+    ParseResponse apiResponse = await ContactDatabase().getObject(objectID);
+
+    if (apiResponse.success && apiResponse.count > 0) {
+      setState(() {
+      invoiceContact = apiResponse.result;
+      contactNameController.text=invoiceContact.contact_name;
+      });
+      return invoiceContact;
+    } else {
+      print(keyAppName + ': ' + apiResponse.error.message);
+    }
+  }
+
   List<ProductDatabase> _selectedProductDatabase = [];
   List<String> _quantity = [];
   List<RODatabase> _roList = [];
+  ContactDatabase invoiceContact;
 
   Future<List<RODatabase>> _getRODatabase(String roCode) async {
     List<RODatabase> roDatabaseList;
@@ -222,7 +257,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
     return roDatabaseList;
   }
 
-  /*TODO add rupee symbol and finish InvoiceDatabase*/
   Widget calculateTotal(String quantity, String salePrice) {
     double doubleQuantity = double.parse(quantity);
     double doubleSalePrice = double.parse(salePrice);
