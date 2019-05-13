@@ -15,6 +15,8 @@ class InvoiceDatabase extends ParseObject implements ParseCloneable {
   String get ro_code => get<String>(roCode);
   set ro_code(String ro_code) => set<String>(roCode, ro_code);
 
+  //TODO add invoice Type
+
 
 
   static const String invoiceNumber = 'invoice_number';
