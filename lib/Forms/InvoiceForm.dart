@@ -190,6 +190,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
               InvoiceDatabase invoiceDatabase = new InvoiceDatabase();
               invoiceDatabase.ro_code=roCode;
               invoiceDatabase.invoice_number=invoiceNumber;
+              invoiceDatabase.invoice_date="${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
               invoiceDatabase.contact_id=invoiceContact.objectId;
               invoiceDatabase.product_id=_selectedProductDatabase[i].objectId;
               invoiceDatabase.product_quantity=_quantity[i];
@@ -264,7 +265,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
     return Text('₹$total');
   }
 
-  String calculateListTotal(
+   String calculateListTotal(
       List<String> quantity, List<ProductDatabase> selectedProductDatabase) {
     double total = 0;
     for (int i = 0; i < quantity.length; i++) {

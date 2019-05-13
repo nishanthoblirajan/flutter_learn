@@ -76,13 +76,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         child: Container(
           child: Column(
             children: <Widget>[
-              new Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(child: futurebuilder),
-
-                ],
-              ),
+              Expanded(child: futurebuilder),
             ],
           ),
         ),),);
@@ -107,6 +101,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       widgetLists.add(ListTile(
         title: Text("# "+_invoiceDatabase[index].invoice_number),
         subtitle: Text(_invoiceDatabase[index].contact_id),
+        leading: Text(_invoiceDatabase[index].invoice_date),
+        trailing: Text(_invoiceDatabase[index].product_id),
       ));
     }
     return widgetLists;
