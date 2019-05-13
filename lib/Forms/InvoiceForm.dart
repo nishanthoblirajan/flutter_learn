@@ -130,25 +130,27 @@ class _InvoiceFormState extends State<InvoiceForm> {
             child: new Text(('Add Products')),
           ),
           /*TODO implement data table calculation*/
-          Expanded (
-            child: DataTable(columns: <DataColumn>[
-              DataColumn(label: Text('Name')),
-              DataColumn(label: Text('Quantity')),
+          Expanded(
+            child: DataTable(
+                columns: <DataColumn>[
+                  DataColumn(label: Text('Name')),
+                  DataColumn(label: Text('Quantity')),
 //              DataColumn(label: Text('Tax')),
-              DataColumn(label: Text('MRP')),
-              DataColumn(label: Text('Total')),
-            ], rows: List.generate(_selectedProductDatabase.length, (index){
-              return DataRow(cells: <DataCell>[
-                DataCell(Text(_selectedProductDatabase[index].name)),
-                DataCell(Text(_quantity[index])),
+                  DataColumn(label: Text('MRP')),
+                  DataColumn(label: Text('Total')),
+                ],
+                rows: List.generate(_selectedProductDatabase.length, (index) {
+                  return DataRow(cells: <DataCell>[
+                    DataCell(Text(_selectedProductDatabase[index].name)),
+                    DataCell(Text(_quantity[index])),
 //                DataCell(Text(_selectedProductDatabase[index].taxName)),
-                DataCell(Text(_selectedProductDatabase[index].salePrice)),
-                DataCell(calculateTotal(_quantity[index],_selectedProductDatabase[index].salePrice)),
-              ]);
-            })
-
-            ),
-          )
+                    DataCell(Text(_selectedProductDatabase[index].salePrice)),
+                    DataCell(calculateTotal(_quantity[index],
+                        _selectedProductDatabase[index].salePrice)),
+                  ]);
+                })),
+          ),
+          Text(calculateListTotal(_quantity, _selectedProductDatabase))
         ],
       ),
     );
@@ -160,13 +162,14 @@ class _InvoiceFormState extends State<InvoiceForm> {
     if (apiResponse.success && apiResponse.count > 0) {
       ProductDatabase productDatabase = apiResponse.result;
       setState(() {
-      _selectedProductDatabase.add(productDatabase);
+        _selectedProductDatabase.add(productDatabase);
       });
       return productDatabase;
     } else {
       print(keyAppName + ': ' + apiResponse.error.message);
     }
   }
+
   List<ProductDatabase> _selectedProductDatabase = [];
   List<String> _quantity = [];
   List<RODatabase> _roList = [];
@@ -189,13 +192,23 @@ class _InvoiceFormState extends State<InvoiceForm> {
     return roDatabaseList;
   }
 
-
   /*TODO add rupee symbol and finish InvoiceDatabase*/
   Widget calculateTotal(String quantity, String salePrice) {
     double doubleQuantity = double.parse(quantity);
     double doubleSalePrice = double.parse(salePrice);
-    double total = doubleQuantity*doubleSalePrice;
+    double total = doubleQuantity * doubleSalePrice;
     return Text('₹$total');
   }
 
+  String calculateListTotal(
+      List<String> quantity, List<ProductDatabase> selectedProductDatabase) {
+    double total = 0;
+    for (int i = 0; i < quantity.length; i++) {
+      double doubleQuantity = double.parse(quantity[i]);
+      double doubleSalePrice =
+          double.parse(selectedProductDatabase[i].salePrice);
+      total += doubleQuantity * doubleSalePrice;
+    }
+    return '₹$total';
+  }
 }
