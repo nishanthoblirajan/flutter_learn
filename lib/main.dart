@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
     Parse().initialize(ApplicationConstants.keyParseApplicationId,
         ApplicationConstants.keyParseServerUrl,
         masterKey: ApplicationConstants.keyParseMasterKey,
-        clientKey: ApplicationConstants.keyParseCustomerKey,
+//        clientKey: ApplicationConstants.keyParseCustomerKey,
         debug: true);
     var response = await Parse().healthCheck();
     if (response.success) {

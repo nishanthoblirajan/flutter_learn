@@ -32,8 +32,11 @@ class _productscreenState extends State<productscreen> {
 
   @override
   initState() {
-    fromInvoice = widget.fromInvoice;
 
+    fromInvoice = widget.fromInvoice;
+    if(fromInvoice==null){
+      fromInvoice=false;
+    }
     scanText = 'Scan';
     searchTextController.text = "";
     barcodeTextController.text = "";
@@ -148,10 +151,10 @@ class _productscreenState extends State<productscreen> {
       widgetLists.add(ListTile(
         onTap: () {
           if (fromInvoice) {
+            print('from Invoice');
             _displayQuantityDialog(context,index);
-
-
           } else {
+            print('not from Invoice');
             _showDialog(context, _productDatabase[index]);
           }
         },
