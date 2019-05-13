@@ -13,6 +13,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
       appBar: new AppBar(
         title: new Text('New Invoice'),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: InvoiceForm(),

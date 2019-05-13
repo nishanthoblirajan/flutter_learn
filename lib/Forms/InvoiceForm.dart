@@ -130,7 +130,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
             child: new Text(('Add Products')),
           ),
           /*TODO implement data table calculation*/
-          Container(
+          Expanded (
             child: DataTable(columns: <DataColumn>[
               DataColumn(label: Text('Name')),
               DataColumn(label: Text('Quantity')),
@@ -195,7 +195,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
     double doubleQuantity = double.parse(quantity);
     double doubleSalePrice = double.parse(salePrice);
     double total = doubleQuantity*doubleSalePrice;
-    return Text('$total');
+    return Text('₹$total');
   }
 
 }
