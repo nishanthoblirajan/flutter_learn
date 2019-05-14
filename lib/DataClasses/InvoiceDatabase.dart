@@ -2,7 +2,7 @@
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 class InvoiceDatabase extends ParseObject implements ParseCloneable {
-  //TODO save productIDS as a List<String>
+
   InvoiceDatabase() : super(_keyTableName);
 
   InvoiceDatabase.clone() : this();
