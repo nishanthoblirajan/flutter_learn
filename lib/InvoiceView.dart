@@ -27,11 +27,16 @@ class _InvoiceViewState extends State<InvoiceView> {
   }
   @override
   void initState() {
+    print('initState');
     // TODO: implement initState
     initSharedPrefs();
 
     invoiceNumber = widget.invoiceNumber;
-    _getInvoiceDetails(invoiceNumber);
+    _getInvoiceDetails(roCode,invoiceNumber).then((result){
+      setState(() {
+        _invoiceDatabase=result;
+      });
+    });
     super.initState();
   }
   @override
@@ -41,19 +46,21 @@ class _InvoiceViewState extends State<InvoiceView> {
         title: new Text('Invoice # '+invoiceNumber),
       ),
       body: Padding(padding: const EdgeInsets.all(12.0),
-      child: Text('$_invoiceDatabase'))
+      child: Text('${_invoiceDatabase.toString()}'))
     );
   }
 
 
   List<InvoiceDatabase> _invoiceDatabase=[];
-  _getInvoiceDetails(String invoiceNumber) async{
+  Future<List<InvoiceDatabase>> _getInvoiceDetails(String roCode,String invoiceNumber) async{
+    print('quering...  Invoice Number $invoiceNumber');
     QueryBuilder<ParseObject> queryBuilder;
     queryBuilder = QueryBuilder<InvoiceDatabase>(InvoiceDatabase())
       ..whereEqualTo(InvoiceDatabase.roCode, roCode)
       ..whereContains(InvoiceDatabase.invoiceNumber, invoiceNumber);
     ParseResponse apiResponse = await queryBuilder.query();
-    if (apiResponse.success && apiResponse.result != null) {
+    print('Result ====> ${apiResponse.success}');
+    if (apiResponse.success&&apiResponse.result!=null) {
       final List<ParseObject> listFromApi = apiResponse.result;
       _invoiceDatabase = new List();
       for (int i = 0; i < listFromApi.length; i++) {
@@ -61,9 +68,14 @@ class _InvoiceViewState extends State<InvoiceView> {
         Map output = json.decode(listFromApi[i].toString());
         InvoiceDatabase invoiceDatabase =
         new InvoiceDatabase().fromJson(output);
-        print(invoiceDatabase.invoice_number);
+        print('To String of the invoice '+invoiceDatabase.toString());
+        setState(() {
         _invoiceDatabase.add(invoiceDatabase);
+
+        });
       }
+      return _invoiceDatabase;
     }
+    return null;
   }
 }
