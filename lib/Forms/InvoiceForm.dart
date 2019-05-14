@@ -207,7 +207,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
     );
   }
 
-  Future<void> getProductFromID(String objectID) async {
+   Future<void> getProductFromID(String objectID) async {
     ParseResponse apiResponse = await ProductDatabase().getObject(objectID);
 
     if (apiResponse.success && apiResponse.count > 0) {

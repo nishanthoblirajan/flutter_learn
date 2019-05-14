@@ -1,7 +1,9 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hello_world/DataClasses/ProductDatabase.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +23,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     initSharedPrefs();
     super.initState();
   }
+
   SharedPreferences sharedPreferences;
   String roCode;
 
@@ -53,34 +56,36 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           );
         }
       },
-      future:
-      _query(roCode, invoiceSearchController.text),
+      future: _query(roCode, invoiceSearchController.text),
     );
-    
+
     return new Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           Fluttertoast.showToast(msg: 'New Invoice');
 
-            Navigator.of(context).push(new MaterialPageRoute(
-                builder: (context) => AddInvoiceScreen()));
-
+          Navigator.of(context).push(
+              new MaterialPageRoute(builder: (context) => AddInvoiceScreen()));
         },
         icon: Icon(Icons.add),
         label: Text('Add'),
       ),
       appBar: AppBar(
-      title: Text('Invoice'),
-    ),
-      body: Padding(padding: const EdgeInsets.all(12.0),
+        title: Text('Invoice'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
         child: Container(
           child: Column(
             children: <Widget>[
               Expanded(child: futurebuilder),
             ],
           ),
-        ),),);
+        ),
+      ),
+    );
   }
+
   List<Widget> _getData(AsyncSnapshot snapshot) {
     ParseResponse apiResponse = snapshot.data;
     if (apiResponse.success && apiResponse.result != null) {
@@ -90,7 +95,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
         InvoiceDatabase invoiceDatabase =
-        new InvoiceDatabase().fromJson(output);
+            new InvoiceDatabase().fromJson(output);
         print(invoiceDatabase.invoice_number);
         _invoiceDatabase.add(invoiceDatabase);
       }
@@ -98,18 +103,29 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
     List<Widget> widgetLists = new List();
     for (int index = 0; index < _invoiceDatabase.length; index++) {
+      _invoiceNumber.add(_invoiceDatabase[index].invoice_number);
+    }
+
+    HashSet<String> hashSet = new HashSet<String>();
+    hashSet.addAll(_invoiceNumber);
+    for (int i = 0; i < hashSet.length; i++) {
+      print(hashSet.elementAt(i));
       widgetLists.add(ListTile(
-        title: Text("# "+_invoiceDatabase[index].invoice_number),
-        subtitle: Text(_invoiceDatabase[index].contact_id),
-        leading: Text(_invoiceDatabase[index].invoice_date),
-        trailing: Text(_invoiceDatabase[index].product_id),
+        title: Text("# " + hashSet.elementAt(i)),
+/*TODO calculate total in _getInvoiceDetails*/
+//        subtitle: Text(_invoiceDatabase[index].contact_id),
+//        leading: Text(_invoiceDatabase[index].invoice_date),
+//        trailing: Text(_invoiceDatabase[index].product_id),
       ));
     }
+
     return widgetLists;
   }
 
   //TODO implement invoice screen
   List<InvoiceDatabase> _invoiceDatabase = [];
+
+  List<String> _invoiceNumber = [];
 
   _query(String roCode, String invoiceSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
@@ -120,7 +136,37 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       queryBuilder = QueryBuilder<InvoiceDatabase>(InvoiceDatabase())
         ..whereEqualTo(InvoiceDatabase.roCode, roCode)
         ..whereContains(InvoiceDatabase.invoiceNumber, invoiceSearch);
-    } 
+    }
     return queryBuilder.query();
+  }
+
+  _getInvoiceDetails(String roCode, String invoiceNumber) async {
+    double total = 0;
+    for (int i = 0; i < _invoiceDatabase.length; i++) {
+      if (_invoiceDatabase[i].invoice_number == invoiceNumber) {
+        ParseResponse apiResponse =
+            await ProductDatabase().getObject(_invoiceDatabase[i].product_id);
+
+        if (apiResponse.success && apiResponse.count > 0) {
+          ProductDatabase productDatabase = apiResponse.result;
+          total += double.parse(productDatabase.salePrice) *
+              double.parse(_invoiceDatabase[i].product_quantity);
+        } else {
+          print(keyAppName + ': ' + apiResponse.error.message);
+        }
+      }
+    }
+    return '$total';
+  }
+
+  Future<void> getProductFromID(String objectID) async {
+    ParseResponse apiResponse = await ProductDatabase().getObject(objectID);
+
+    if (apiResponse.success && apiResponse.count > 0) {
+      ProductDatabase productDatabase = apiResponse.result;
+      return productDatabase;
+    } else {
+      print(keyAppName + ': ' + apiResponse.error.message);
+    }
   }
 }
