@@ -192,7 +192,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
               invoiceDatabase.invoice_number=invoiceNumber;
               invoiceDatabase.invoice_date="${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
               invoiceDatabase.contact_id=invoiceContact.objectId;
-              invoiceDatabase.product_id=_selectedProductDatabase[i].objectId;
+              invoiceDatabase.product_id=_selectedProductDatabase[i].name;
               invoiceDatabase.product_quantity=_quantity[i];
               ParseResponse apiResponse = await invoiceDatabase.save();
               if(apiResponse.success){

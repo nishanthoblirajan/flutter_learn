@@ -105,22 +105,19 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     }
 
     List<Widget> widgetLists = new List();
-    for (int index = 0; index < _invoiceDatabase.length; index++) {
-      _invoiceNumber.add(_invoiceDatabase[index].invoice_number);
-    }
 
-    HashSet<String> hashSet = new HashSet<String>();
-    hashSet.addAll(_invoiceNumber);
-    for (int i = 0; i < hashSet.length; i++) {
-      print('hashSet.length ---> ${hashSet.length}');
+    for (int i = 0; i < _invoiceDatabase.length; i++) {
+      print('hashSet.length ---> ${_invoiceDatabase.length}');
       widgetLists.add(ListTile(
-        title: Text('# ${hashSet.elementAt(i)}'),
+        title: Text('# ${_invoiceDatabase[i].invoice_number} '),
         onTap: () {
           Navigator.of(context).push(
               new MaterialPageRoute(builder: (context) => InvoiceView(
-                invoiceNumber: hashSet.elementAt(i),
+                invoiceNumber: _invoiceDatabase[i].invoice_number,
               )));
         },
+        trailing: Text('${_invoiceDatabase[i].product_id} x ${_invoiceDatabase[i].product_quantity}'),
+//        trailing: Text(_getContactName(hashSet.elementAt(i))),
 /*TODO calculate total in _getInvoiceDetails*/
 
 //        subtitle: Text(_invoiceDatabase[index].contact_id),
@@ -134,8 +131,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   //TODO implement invoice screen
   List<InvoiceDatabase> _invoiceDatabase = [];
-
-  List<String> _invoiceNumber = [];
 
   _query(String roCode, String invoiceSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
