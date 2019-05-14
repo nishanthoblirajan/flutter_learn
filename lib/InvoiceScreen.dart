@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hello_world/DataClasses/ContactDatabase.dart';
 import 'package:hello_world/DataClasses/ProductDatabase.dart';
+import 'package:hello_world/InvoiceView.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +23,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   @override
   initState() {
     initSharedPrefs();
+    _query(roCode, '');
     super.initState();
   }
 
@@ -92,7 +95,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       final List<ParseObject> listFromApi = apiResponse.result;
       _invoiceDatabase = new List();
       for (int i = 0; i < listFromApi.length; i++) {
-        print(listFromApi[i].toString());
+//        print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
         InvoiceDatabase invoiceDatabase =
             new InvoiceDatabase().fromJson(output);
@@ -109,10 +112,17 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     HashSet<String> hashSet = new HashSet<String>();
     hashSet.addAll(_invoiceNumber);
     for (int i = 0; i < hashSet.length; i++) {
-      print(hashSet.elementAt(i));
+      print('hashSet.length ---> ${hashSet.length}');
       widgetLists.add(ListTile(
-        title: Text("# " + hashSet.elementAt(i)),
+        title: Text('# ${hashSet.elementAt(i)}'),
+        onTap: () {
+          Navigator.of(context).push(
+              new MaterialPageRoute(builder: (context) => InvoiceView(
+                invoiceNumber: hashSet.elementAt(i),
+              )));
+        },
 /*TODO calculate total in _getInvoiceDetails*/
+
 //        subtitle: Text(_invoiceDatabase[index].contact_id),
 //        leading: Text(_invoiceDatabase[index].invoice_date),
 //        trailing: Text(_invoiceDatabase[index].product_id),
@@ -138,35 +148,5 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         ..whereContains(InvoiceDatabase.invoiceNumber, invoiceSearch);
     }
     return queryBuilder.query();
-  }
-
-  _getInvoiceDetails(String roCode, String invoiceNumber) async {
-    double total = 0;
-    for (int i = 0; i < _invoiceDatabase.length; i++) {
-      if (_invoiceDatabase[i].invoice_number == invoiceNumber) {
-        ParseResponse apiResponse =
-            await ProductDatabase().getObject(_invoiceDatabase[i].product_id);
-
-        if (apiResponse.success && apiResponse.count > 0) {
-          ProductDatabase productDatabase = apiResponse.result;
-          total += double.parse(productDatabase.salePrice) *
-              double.parse(_invoiceDatabase[i].product_quantity);
-        } else {
-          print(keyAppName + ': ' + apiResponse.error.message);
-        }
-      }
-    }
-    return '$total';
-  }
-
-  Future<void> getProductFromID(String objectID) async {
-    ParseResponse apiResponse = await ProductDatabase().getObject(objectID);
-
-    if (apiResponse.success && apiResponse.count > 0) {
-      ProductDatabase productDatabase = apiResponse.result;
-      return productDatabase;
-    } else {
-      print(keyAppName + ': ' + apiResponse.error.message);
-    }
   }
 }
