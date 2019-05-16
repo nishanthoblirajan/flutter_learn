@@ -108,22 +108,28 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     }
 
     List<Widget> widgetLists = new List();
+    for(int i=0;i<_invoiceDatabase.length;i++){
+      _invoiceNumbers.add(_invoiceDatabase[i].invoice_number);
+      _invoiceAmounts.add(_invoiceDatabase[i].invoice_price_total);
+    }
 
-    for (int i = 0; i < _invoiceDatabase.length; i++) {
-      print('hashSet.length ---> ${_invoiceDatabase.length}');
+    Set<num> invoiceNumbers = LinkedHashSet.from(_invoiceNumbers);
+    /*TODO 17/05/2019 get InvoicePriceAmount value using the InvoiceNumbers*/
+
+    print('The length is ${invoiceNumbers.length}');
+
+    for (int i = 0; i < invoiceNumbers.length; i++) {
       widgetLists.add(ListTile(
-        title: Text('# ${_invoiceDatabase[i].invoice_number} '),
+        title: Text('# ${invoiceNumbers.elementAt(i)}'),
         onTap: () {
           Navigator.of(context).push(
               new MaterialPageRoute(builder: (context) =>
                   InvoiceView(
-                    invoiceNumber: _invoiceDatabase[i].invoice_number,
+                    invoiceNumber: invoiceNumbers.elementAt(i),
                   )));
         },
         trailing: Text(
-            '${_invoiceDatabase[i].product_name} x ${_invoiceDatabase[i]
-                .product_quantity} = ${_invoiceDatabase[i]
-                .product_price_total}'),
+            'TODO'),
       ));
     }
 
@@ -131,6 +137,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   }
 
   List<InvoiceDatabase> _invoiceDatabase = [];
+  List<num> _invoiceNumbers=[];
+  List<String> _invoiceAmounts=[];
 
   _query(String roCode, num invoiceSearch) async {
     QueryBuilder<ParseObject> queryBuilder;

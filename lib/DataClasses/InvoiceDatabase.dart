@@ -54,6 +54,14 @@ class InvoiceDatabase extends ParseObject implements ParseCloneable {
 
 
 
+  /*Remember: ProductPriceTotal gets the total for each product
+  * InvoicePriceTotal gets the total for each Invoice*/
+  static const String invoicePriceTotal = 'invoice_price_total';
+  String get invoice_price_total => get<String>(invoicePriceTotal);
+  set invoice_price_total(String invoice_price_total) => set<String>(invoicePriceTotal, invoice_price_total);
+
+
+
 
 }
 

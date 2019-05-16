@@ -197,13 +197,16 @@ class _InvoiceFormState extends State<InvoiceForm> {
               invoiceDatabase.product_name=_selectedProductDatabase[i].name;
               invoiceDatabase.product_quantity=_quantity[i];
               invoiceDatabase.product_price_total = calculation(_selectedProductDatabase[i].salePrice,_quantity[i]).toString();
-              ParseResponse apiResponse = await invoiceDatabase.save();
+              invoiceDatabase.invoice_price_total =calculateListTotal(_quantity, _selectedProductDatabase);
+            ParseResponse apiResponse = await invoiceDatabase.save();
               if(apiResponse.success){
                 Fluttertoast.showToast(msg: 'Saved');
                 roDatabase.setIncrement('invoice_number', 1);
-//                roDatabase.invoice_number=roDatabase.invoice_number+1;
-                roDatabase.save();
+                var saveResponse = await roDatabase.save();
+                if(saveResponse.success){
                 Navigator.pop(context);
+
+                }
               }
             }
           }),
