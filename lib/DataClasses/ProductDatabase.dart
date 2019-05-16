@@ -7,6 +7,7 @@ class ProductDatabase extends ParseObject implements ParseCloneable{
 
   /// Looks strangely hacky but due to Flutter not using reflection, we have to
   /// mimic a clone
+
   @override clone(Map map) => ProductDatabase.clone()..fromJson(map);
 
   static const String _keyTableName = 'ProductDatabase';

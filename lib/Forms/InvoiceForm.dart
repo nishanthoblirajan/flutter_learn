@@ -186,21 +186,43 @@ class _InvoiceFormState extends State<InvoiceForm> {
           new RaisedButton(child:Text('Generate'),onPressed: () async {
             /*This is using the ProductDatabase and not the ObjectId*/
             /*The invoice database saves the product and contacts using their objectIds*/
-            for(int i=0;i<_selectedProductDatabase.length;i++){
-              InvoiceDatabase invoiceDatabase = new InvoiceDatabase();
-              invoiceDatabase.ro_code=roCode;
-              invoiceDatabase.invoice_number=invoiceNumber;
-              invoiceDatabase.invoice_date="${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
-              invoiceDatabase.contact_id=invoiceContact.objectId;
-              invoiceDatabase.product_id=_selectedProductDatabase[i].name;
-              invoiceDatabase.product_quantity=_quantity[i];
-              ParseResponse apiResponse = await invoiceDatabase.save();
-              if(apiResponse.success){
-                Fluttertoast.showToast(msg: 'Saved');
-                Navigator.pop(context);
-              }
 
+            //Save all the product names in a string array
+            List<String> productNames = new List();
+            List<String> productQuantities;
+            List<String> productTotals;
+            for(int i=0;i<_selectedProductDatabase.length;i++){
+              productNames.add(_selectedProductDatabase[i].name);
             }
+            InvoiceDatabase invoiceDatabase = new InvoiceDatabase();
+            invoiceDatabase.ro_code=roCode;
+            invoiceDatabase.invoice_number=invoiceNumber;
+            invoiceDatabase.invoice_date="${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+            invoiceDatabase.contact_id=invoiceContact.objectId;
+            invoiceDatabase.product_id=productNames;
+            ParseResponse apiResponse = await invoiceDatabase.save();
+            if(apiResponse.success){
+              Fluttertoast.showToast(msg: 'Saved');
+              Navigator.pop(context);
+            }else{
+              Fluttertoast.showToast(msg: 'Error');
+            }
+
+//            for(int i=0;i<_selectedProductDatabase.length;i++){
+//              InvoiceDatabase invoiceDatabase = new InvoiceDatabase();
+//              invoiceDatabase.ro_code=roCode;
+//              invoiceDatabase.invoice_number=invoiceNumber;
+//              invoiceDatabase.invoice_date="${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+//              invoiceDatabase.contact_id=invoiceContact.objectId;
+//              invoiceDatabase.product_id=_selectedProductDatabase[i].objectId;
+//              invoiceDatabase.product_quantity=_quantity[i];
+//              invoiceDatabase.product_price_total = calculation(_selectedProductDatabase[i].salePrice,_quantity[i]).toString();
+//              ParseResponse apiResponse = await invoiceDatabase.save();
+//              if(apiResponse.success){
+//                Fluttertoast.showToast(msg: 'Saved');
+//                Navigator.pop(context);
+//              }
+//            }
           }),
         ],
       ),
@@ -263,6 +285,12 @@ class _InvoiceFormState extends State<InvoiceForm> {
     double doubleSalePrice = double.parse(salePrice);
     double total = doubleQuantity * doubleSalePrice;
     return Text('₹$total');
+  }
+
+  double calculation(String s1,String s2){
+    double d1 = double.parse(s1);
+    double d2 = double.parse(s2);
+    return d1*d2;
   }
 
    String calculateListTotal(

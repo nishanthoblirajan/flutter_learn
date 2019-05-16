@@ -116,7 +116,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 invoiceNumber: _invoiceDatabase[i].invoice_number,
               )));
         },
-        trailing: Text('${_invoiceDatabase[i].product_id} x ${_invoiceDatabase[i].product_quantity}'),
+        trailing: Text('${_invoiceDatabase[i].product_id} x ${_invoiceDatabase[i].product_quantity} = ${_invoiceDatabase[i].product_price_total}'),
 //        trailing: Text(_getContactName(hashSet.elementAt(i))),
 /*TODO calculate total in _getInvoiceDetails*/
 
