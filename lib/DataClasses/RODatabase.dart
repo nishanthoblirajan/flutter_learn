@@ -17,19 +17,19 @@ class RODatabase extends ParseObject implements ParseCloneable {
 
   set ro_code(String ro_code) => set<String>(roCode, ro_code);
 
-  static const String invoiceNumber = 'invoice_number';
+  static const String keyInvoiceNumber='invoice_number';
 
-  String get invoice_number => get<String>(invoiceNumber);
 
-  set invoice_number(String invoice_number) =>
-      set<String>(invoiceNumber, invoice_number);
+  num get invoice_number => get<num>(keyInvoiceNumber);
+  set invoice_number(num invoiceNumber) => super.set<num>(keyInvoiceNumber, invoiceNumber);
+
 
   static const String purchaseNumber = 'purchase_number';
 
-  String get purchase_number => get<String>(purchaseNumber);
+  num get purchase_number => get<num>(purchaseNumber);
 
-  set purchase_number(String purchase_number) =>
-      set<String>(purchaseNumber, purchase_number);
+  set purchase_number(num purchase_number) =>
+      set<num>(purchaseNumber, purchase_number);
 
 
 }

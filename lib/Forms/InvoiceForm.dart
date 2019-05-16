@@ -17,7 +17,7 @@ class InvoiceForm extends StatefulWidget {
 }
 
 class _InvoiceFormState extends State<InvoiceForm> {
-  String invoiceNumber;
+  num invoiceNumber;
   RODatabase roDatabase;
 
   SharedPreferences sharedPreferences;
@@ -61,7 +61,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
 
   @override
   initState() {
-    invoiceNumber = 'N/A';
+    invoiceNumber = 0;
     _quantity = new List();
     _selectedProductDatabase = new List();
     initSharedPrefs();
@@ -80,7 +80,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
             calculateListTotal(_quantity, _selectedProductDatabase),
             style: TextStyle(fontSize: 20),
           ),
-          new Text('Invoice #' + invoiceNumber),
+          new Text('Invoice # $invoiceNumber'),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -192,7 +192,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
             for(int i=0;i<_selectedProductDatabase.length;i++){
               InvoiceDatabase invoiceDatabase = new InvoiceDatabase();
               invoiceDatabase.ro_code=roCode;
-              invoiceDatabase.invoice_number=invoiceNumber;
+              invoiceDatabase.set('invoice_number', invoiceNumber);
               invoiceDatabase.invoice_date="${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
               invoiceDatabase.contact_id=invoiceContact.objectId;
               invoiceDatabase.product_id=_selectedProductDatabase[i].objectId;
@@ -202,6 +202,10 @@ class _InvoiceFormState extends State<InvoiceForm> {
               ParseResponse apiResponse = await invoiceDatabase.save();
               if(apiResponse.success){
                 Fluttertoast.showToast(msg: 'Saved');
+                /*TODO increment the invoice number*/
+                roDatabase.setIncrement('invoice_number', 1);
+//                roDatabase.invoice_number=roDatabase.invoice_number+1;
+                roDatabase.save();
                 Navigator.pop(context);
               }
             }

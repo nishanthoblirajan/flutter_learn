@@ -12,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'AddInvoiceScreen.dart';
 import 'DataClasses/InvoiceDatabase.dart';
 
+
+/*TODO redo the InvoiceScreen again*/
 class InvoiceScreen extends StatefulWidget {
   @override
   _InvoiceScreenState createState() => _InvoiceScreenState();
@@ -23,7 +25,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   @override
   initState() {
     initSharedPrefs();
-    _query(roCode, '');
+    _query(roCode, 0);
     super.initState();
   }
 
@@ -59,7 +61,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           );
         }
       },
-      future: _query(roCode, invoiceSearchController.text),
+      //TODO see here
+      future: _query(roCode, 0),
+
+//      future: _query(roCode, invoiceSearchController.text),
     );
 
     return new Scaffold(
@@ -98,7 +103,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 //        print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
         InvoiceDatabase invoiceDatabase =
-            new InvoiceDatabase().fromJson(output);
+        new InvoiceDatabase().fromJson(output);
         print(invoiceDatabase.invoice_number);
         _invoiceDatabase.add(invoiceDatabase);
       }
@@ -112,17 +117,15 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         title: Text('# ${_invoiceDatabase[i].invoice_number} '),
         onTap: () {
           Navigator.of(context).push(
-              new MaterialPageRoute(builder: (context) => InvoiceView(
-                invoiceNumber: _invoiceDatabase[i].invoice_number,
-              )));
+              new MaterialPageRoute(builder: (context) =>
+                  InvoiceView(
+                    invoiceNumber: _invoiceDatabase[i].invoice_number,
+                  )));
         },
-        trailing: Text('${_invoiceDatabase[i].product_name} x ${_invoiceDatabase[i].product_quantity} = ${_invoiceDatabase[i].product_price_total}'),
-//        trailing: Text(_getContactName(hashSet.elementAt(i))),
-/*TODO calculate total in _getInvoiceDetails*/
-
-//        subtitle: Text(_invoiceDatabase[index].contact_id),
-//        leading: Text(_invoiceDatabase[index].invoice_date),
-//        trailing: Text(_invoiceDatabase[index].product_id),
+        trailing: Text(
+            '${_invoiceDatabase[i].product_name} x ${_invoiceDatabase[i]
+                .product_quantity} = ${_invoiceDatabase[i]
+                .product_price_total}'),
       ));
     }
 
@@ -132,16 +135,18 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   //TODO implement invoice screen
   List<InvoiceDatabase> _invoiceDatabase = [];
 
-  _query(String roCode, String invoiceSearch) async {
+  _query(String roCode, num invoiceSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
-    if (invoiceSearch == "") {
+    if (invoiceSearch<1) {
+      print('query is only roCode');
       queryBuilder = QueryBuilder<InvoiceDatabase>(InvoiceDatabase())
         ..whereEqualTo(InvoiceDatabase.roCode, roCode);
     } else {
       queryBuilder = QueryBuilder<InvoiceDatabase>(InvoiceDatabase())
         ..whereEqualTo(InvoiceDatabase.roCode, roCode)
-        ..whereContains(InvoiceDatabase.invoiceNumber, invoiceSearch);
+      //TODO check here because you comment when you changed the invoiceNumber to a num variable
+        ..whereEqualTo(InvoiceDatabase.keyInvoiceNumber, invoiceSearch);
+      return queryBuilder.query();
     }
-    return queryBuilder.query();
   }
 }

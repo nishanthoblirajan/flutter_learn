@@ -6,7 +6,7 @@ import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InvoiceView extends StatefulWidget {
-  String invoiceNumber;
+  num invoiceNumber;
   @override
   _InvoiceViewState createState() => _InvoiceViewState();
 
@@ -15,7 +15,7 @@ class InvoiceView extends StatefulWidget {
 
 class _InvoiceViewState extends State<InvoiceView> {
 
-  String invoiceNumber;
+  num invoiceNumber;
   SharedPreferences sharedPreferences;
   String roCode;
 
@@ -43,7 +43,7 @@ class _InvoiceViewState extends State<InvoiceView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: new Text('Invoice # '+invoiceNumber),
+        title: new Text('Invoice # $invoiceNumber'),
       ),
       body: Padding(padding: const EdgeInsets.all(12.0),
       child: Text('${_invoiceDatabase.toString()}'))
@@ -52,12 +52,13 @@ class _InvoiceViewState extends State<InvoiceView> {
 
 
   List<InvoiceDatabase> _invoiceDatabase=[];
-  Future<List<InvoiceDatabase>> _getInvoiceDetails(String roCode,String invoiceNumber) async{
+  Future<List<InvoiceDatabase>> _getInvoiceDetails(String roCode,num invoiceNumber) async{
     print('quering...  Invoice Number $invoiceNumber');
     QueryBuilder<ParseObject> queryBuilder;
     queryBuilder = QueryBuilder<InvoiceDatabase>(InvoiceDatabase())
-      ..whereEqualTo(InvoiceDatabase.roCode, roCode)
-      ..whereContains(InvoiceDatabase.invoiceNumber, invoiceNumber);
+      ..whereEqualTo(InvoiceDatabase.roCode, roCode);
+    //TODO check here too
+//      ..whereContains(InvoiceDatabase.invoiceNumber, invoiceNumber);
     ParseResponse apiResponse = await queryBuilder.query();
     print('Result ====> ${apiResponse.success}');
     if (apiResponse.success&&apiResponse.result!=null) {

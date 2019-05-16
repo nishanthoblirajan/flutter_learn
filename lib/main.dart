@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hello_world/DataClasses/RODatabase.dart';
 import 'package:hello_world/productscreen.dart';
 import 'package:hello_world/layouts.dart';
 import 'package:hello_world/addproductscreen.dart';
@@ -49,8 +50,17 @@ class _MyAppState extends State<MyApp> {
   @override
   initState() {
     initParse();
+//    initRO();
     _setSharedPreference();
     super.initState();
+  }
+
+  initRO(){
+    RODatabase roDatabase = new RODatabase();
+    roDatabase.invoice_number=1;
+    roDatabase.ro_code='12345';
+    roDatabase.purchase_number=1;
+    roDatabase.save();
   }
 
   initParse() async {

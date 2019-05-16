@@ -20,9 +20,10 @@ class InvoiceDatabase extends ParseObject implements ParseCloneable {
 
 
 
-  static const String invoiceNumber = 'invoice_number';
-  String get invoice_number => get<String>(invoiceNumber);
-  set invoice_number(String invoice_number) => set<String>(invoiceNumber, invoice_number);
+  static const String keyInvoiceNumber = 'invoice_number';
+
+  num get invoice_number => get<num>(keyInvoiceNumber);
+  set invoice_number(num invoice_number) => set<num>(keyInvoiceNumber, invoice_number);
 
   static const String invoiceDate = 'invoice_date';
   String get invoice_date => get<String>(invoiceDate);
