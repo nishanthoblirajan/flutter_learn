@@ -13,7 +13,6 @@ import 'AddInvoiceScreen.dart';
 import 'DataClasses/InvoiceDatabase.dart';
 
 
-/*TODO redo the InvoiceScreen again*/
 class InvoiceScreen extends StatefulWidget {
   @override
   _InvoiceScreenState createState() => _InvoiceScreenState();
@@ -61,7 +60,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           );
         }
       },
-      //TODO see here
+      //TODO 16/05/2019 -> TextEditingController should come for the _query(roCode,[])
       future: _query(roCode, 0),
 
 //      future: _query(roCode, invoiceSearchController.text),
@@ -100,7 +99,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       final List<ParseObject> listFromApi = apiResponse.result;
       _invoiceDatabase = new List();
       for (int i = 0; i < listFromApi.length; i++) {
-//        print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
         InvoiceDatabase invoiceDatabase =
         new InvoiceDatabase().fromJson(output);
@@ -132,21 +130,20 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     return widgetLists;
   }
 
-  //TODO implement invoice screen
   List<InvoiceDatabase> _invoiceDatabase = [];
 
   _query(String roCode, num invoiceSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
-    if (invoiceSearch<1) {
-      print('query is only roCode');
+    if (invoiceSearch<=0) {
+      print('query is choice 1');
       queryBuilder = QueryBuilder<InvoiceDatabase>(InvoiceDatabase())
         ..whereEqualTo(InvoiceDatabase.roCode, roCode);
     } else {
+      print('query is choice 2');
       queryBuilder = QueryBuilder<InvoiceDatabase>(InvoiceDatabase())
         ..whereEqualTo(InvoiceDatabase.roCode, roCode)
-      //TODO check here because you comment when you changed the invoiceNumber to a num variable
         ..whereEqualTo(InvoiceDatabase.keyInvoiceNumber, invoiceSearch);
-      return queryBuilder.query();
     }
+    return queryBuilder.query();
   }
 }

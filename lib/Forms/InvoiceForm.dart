@@ -101,8 +101,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
           ),
           new RaisedButton(
             onPressed: () async {
-              /*TODO add choose contact
-              * Implement activity for result here*/
               Fluttertoast.showToast(msg: 'Add Contact');
 
               Map results =
@@ -137,7 +135,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
             },
             child: new Text(('Add Products')),
           ),
-          /*TODO implement data table calculation*/
+          /*TODO 16/05/2019 implement data table calculation*/
           Flexible(
             child: DataTable(
                 columns: <DataColumn>[
@@ -202,7 +200,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
               ParseResponse apiResponse = await invoiceDatabase.save();
               if(apiResponse.success){
                 Fluttertoast.showToast(msg: 'Saved');
-                /*TODO increment the invoice number*/
                 roDatabase.setIncrement('invoice_number', 1);
 //                roDatabase.invoice_number=roDatabase.invoice_number+1;
                 roDatabase.save();

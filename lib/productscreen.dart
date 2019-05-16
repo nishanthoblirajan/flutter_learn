@@ -14,7 +14,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 
 class productscreen extends StatefulWidget {
-  /*TODO implement Add Products from InvoiceForm*/
   bool fromInvoice;
 
   @override
@@ -246,7 +245,6 @@ class _productscreenState extends State<productscreen> {
         });
   }
 
-  /*TODO test barcode scanning*/
   Future _barcodeScanning() async {
     if (scanText != 'Clear') {
       try {

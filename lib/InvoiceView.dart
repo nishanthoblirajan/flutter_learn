@@ -28,7 +28,6 @@ class _InvoiceViewState extends State<InvoiceView> {
   @override
   void initState() {
     print('initState');
-    // TODO: implement initState
     initSharedPrefs();
 
     invoiceNumber = widget.invoiceNumber;
@@ -56,9 +55,8 @@ class _InvoiceViewState extends State<InvoiceView> {
     print('quering...  Invoice Number $invoiceNumber');
     QueryBuilder<ParseObject> queryBuilder;
     queryBuilder = QueryBuilder<InvoiceDatabase>(InvoiceDatabase())
-      ..whereEqualTo(InvoiceDatabase.roCode, roCode);
-    //TODO check here too
-//      ..whereContains(InvoiceDatabase.invoiceNumber, invoiceNumber);
+      ..whereEqualTo(InvoiceDatabase.roCode, roCode)
+      ..whereEqualTo('invoice_number', invoiceNumber);
     ParseResponse apiResponse = await queryBuilder.query();
     print('Result ====> ${apiResponse.success}');
     if (apiResponse.success&&apiResponse.result!=null) {
@@ -72,7 +70,6 @@ class _InvoiceViewState extends State<InvoiceView> {
         print('To String of the invoice '+invoiceDatabase.toString());
         setState(() {
         _invoiceDatabase.add(invoiceDatabase);
-
         });
       }
       return _invoiceDatabase;
