@@ -33,10 +33,15 @@ class InvoiceDatabase extends ParseObject implements ParseCloneable {
   String get contact_id => get<String>(contactID);
   set contact_id(String contact_id) => set<String>(contactID, contact_id);
 
-  //TODO Error: schema mismatch for InvoiceDatabase.product_id; expected String but got Array
   static const String productID = 'product_id';
-  List<String> get product_id => get<List<String>>(productID);
-  set product_id(List<String> product_id) => set<List<String>>(productID, product_id);
+  String get product_id => get<String>(productID);
+  set product_id(String product_id) => set<String>(productID, product_id);
+
+
+  static const String productName = 'product_name';
+  String get product_name => get<String>(productName);
+  set product_name(String product_name) => set<String>(productName, product_name);
+
 
   static const String productQuantity = 'product_quantity';
   String get product_quantity => get<String>(productQuantity);
