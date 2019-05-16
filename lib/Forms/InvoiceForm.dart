@@ -199,7 +199,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
             invoiceDatabase.invoice_number=invoiceNumber;
             invoiceDatabase.invoice_date="${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
             invoiceDatabase.contact_id=invoiceContact.objectId;
-            invoiceDatabase.product_id=productNames;
+            invoiceDatabase.setAddAll('product_id', productNames);
+//            invoiceDatabase.set<List<String>>('product_id', productNames);
             ParseResponse apiResponse = await invoiceDatabase.save();
             if(apiResponse.success){
               Fluttertoast.showToast(msg: 'Saved');
