@@ -13,6 +13,7 @@ import 'AddInvoiceScreen.dart';
 import 'DataClasses/InvoiceDatabase.dart';
 
 
+//TODO implement Search based on Invoice Number
 class InvoiceScreen extends StatefulWidget {
   @override
   _InvoiceScreenState createState() => _InvoiceScreenState();
@@ -106,11 +107,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         _invoiceDatabase.add(invoiceDatabase);
       }
     }
+    _invoiceDatabase.reversed;
 
     List<Widget> widgetLists = new List();
     for(int i=0;i<_invoiceDatabase.length;i++){
       _invoiceNumbers.add(_invoiceDatabase[i].invoice_number);
-      _invoiceAmounts.add(_invoiceDatabase[i].invoice_price_total);
     }
 
     Set<num> invoiceNumbers = LinkedHashSet.from(_invoiceNumbers);
@@ -129,7 +130,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   )));
         },
         trailing: Text(
-            'TODO'),
+            getInvoiceAmountFromInvoiceNumber(invoiceNumbers.elementAt(i))),
       ));
     }
 
@@ -138,14 +139,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   List<InvoiceDatabase> _invoiceDatabase = [];
   List<num> _invoiceNumbers=[];
-  List<String> _invoiceAmounts=[];
 
   _query(String roCode, num invoiceSearch) async {
     QueryBuilder<ParseObject> queryBuilder;
     if (invoiceSearch<=0) {
       print('query is choice 1');
       queryBuilder = QueryBuilder<InvoiceDatabase>(InvoiceDatabase())
-        ..whereEqualTo(InvoiceDatabase.roCode, roCode);
+        ..whereEqualTo(InvoiceDatabase.roCode, roCode)..orderByDescending(InvoiceDatabase.keyInvoiceNumber);
     } else {
       print('query is choice 2');
       queryBuilder = QueryBuilder<InvoiceDatabase>(InvoiceDatabase())
@@ -153,5 +153,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         ..whereEqualTo(InvoiceDatabase.keyInvoiceNumber, invoiceSearch);
     }
     return queryBuilder.query();
+  }
+
+  String getInvoiceAmountFromInvoiceNumber(num elementAt) {
+    for(int i=0;i<_invoiceDatabase.length;i++){
+      if(_invoiceDatabase[i].invoice_number==elementAt){
+        return _invoiceDatabase[i].invoice_price_total;
+      }
+    }
   }
 }
