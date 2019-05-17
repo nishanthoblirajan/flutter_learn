@@ -14,6 +14,13 @@ class InvoiceView extends StatefulWidget {
   InvoiceView({Key key, @required this.invoiceNumber}) : super(key: key);
 }
 
+/*TODO 17/05/2019 display all relevant invoice details such as
+* Contact
+* Contact Address
+* Products
+* Tax
+* Total
+* Print Button for pdf generation*/
 class _InvoiceViewState extends State<InvoiceView> {
   num invoiceNumber;
   SharedPreferences sharedPreferences;

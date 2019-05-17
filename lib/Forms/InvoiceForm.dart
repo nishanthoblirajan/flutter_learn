@@ -11,6 +11,7 @@ import 'package:hello_world/productscreen.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/*TODO 17/05/2019 check invoiceNumber increment. Sometimes it increments by 2 and not by 1*/
 class InvoiceForm extends StatefulWidget {
   @override
   _InvoiceFormState createState() => _InvoiceFormState();
