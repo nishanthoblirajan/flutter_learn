@@ -196,6 +196,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
               invoiceDatabase.product_id=_selectedProductDatabase[i].objectId;
               invoiceDatabase.product_name=_selectedProductDatabase[i].name;
               invoiceDatabase.product_quantity=_quantity[i];
+              invoiceDatabase.product_price_MRP=_selectedProductDatabase[i].salePrice;
               invoiceDatabase.product_price_total = calculation(_selectedProductDatabase[i].salePrice,_quantity[i]).toString();
               invoiceDatabase.invoice_price_total =calculateListTotal(_quantity, _selectedProductDatabase);
             ParseResponse apiResponse = await invoiceDatabase.save();

@@ -48,6 +48,11 @@ class InvoiceDatabase extends ParseObject implements ParseCloneable {
   String get product_quantity => get<String>(productQuantity);
   set product_quantity(String product_quantity) => set<String>(productQuantity, product_quantity);
 
+  static const String productPriceMRP = 'product_price_MRP';
+  String get product_price_MRP => get<String>(productPriceMRP);
+  set product_price_MRP(String product_price_MRP) => set<String>(productPriceMRP, product_price_MRP);
+
+
   static const String productPriceTotal = 'product_price_total';
   String get product_price_total => get<String>(productPriceTotal);
   set product_price_total(String product_price_total) => set<String>(productPriceTotal, product_price_total);
