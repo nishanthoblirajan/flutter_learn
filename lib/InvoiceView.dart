@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hello_world/DataClasses/ContactDatabase.dart';
 import 'package:hello_world/DataClasses/InvoiceDatabase.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,6 +27,7 @@ class _InvoiceViewState extends State<InvoiceView> {
   SharedPreferences sharedPreferences;
   String roCode;
 
+  ContactDatabase invoiceContact = new ContactDatabase();
   initSharedPrefs() async {
     sharedPreferences = await SharedPreferences.getInstance();
     if (sharedPreferences != null) {
@@ -48,7 +50,17 @@ class _InvoiceViewState extends State<InvoiceView> {
     invoiceNumber = widget.invoiceNumber;
     super.initState();
   }
+  Future<void> getContactFromID(String objectID) async {
+    ParseResponse apiResponse = await ContactDatabase().getObject(objectID);
 
+    if (apiResponse.success && apiResponse.count > 0) {
+      setState(() {
+        invoiceContact = apiResponse.result;
+      });
+    } else {
+      print(keyAppName + ': ' + apiResponse.error.message);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,6 +72,7 @@ class _InvoiceViewState extends State<InvoiceView> {
           child: Container(
             child: Column(
               children: <Widget>[
+                Text('${invoiceContact.contact_name}\n${invoiceContact.contact_address}\n${invoiceContact.contact_phone}'),
                 Flexible(child: DataTable(
                     columns: <DataColumn>[
                       DataColumn(
@@ -128,9 +141,11 @@ class _InvoiceViewState extends State<InvoiceView> {
         Map output = json.decode(listFromApi[i].toString());
         InvoiceDatabase invoiceDatabase =
             new InvoiceDatabase().fromJson(output);
+
         print('To String of the invoice ' + invoiceDatabase.toString());
         setState(() {
           _invoiceDatabase.add(invoiceDatabase);
+          getContactFromID(invoiceDatabase.contact_id);
         });
       }
     }
