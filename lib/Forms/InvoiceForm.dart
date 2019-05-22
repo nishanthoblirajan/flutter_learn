@@ -201,8 +201,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
               invoiceDatabase.product_quantity=_quantity[i];
               invoiceDatabase.product_price_MRP=_selectedProductDatabase[i].salePrice;
               invoiceDatabase.product_price_total = calculation(_selectedProductDatabase[i].salePrice,_quantity[i]).toString();
-              invoiceDatabase.invoice_price_total =calculateListTotal(_quantity, _selectedProductDatabase);
-              total = invoiceDatabase.invoice_price_total;
+              invoiceDatabase.invoice_price_total ='₹'+calculateListTotal(_quantity, _selectedProductDatabase);
+              total = calculateListTotal(_quantity, _selectedProductDatabase);
               ParseResponse apiResponse = await invoiceDatabase.save();
               if(apiResponse.success){
                 Fluttertoast.showToast(msg: 'Saved');
@@ -223,6 +223,9 @@ class _InvoiceFormState extends State<InvoiceForm> {
             ParseResponse ledgerResponse = await ledger.save();
             if(saveResponse.success&&ledgerResponse.success){
               Navigator.pop(context);
+            }else{
+              print('RODatabase ${saveResponse.result.toString()}');
+              print('LedgerResponse ${ledgerResponse.result.toString()}');
             }
           }),
         ],
@@ -303,6 +306,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
           double.parse(selectedProductDatabase[i].salePrice);
       total += doubleQuantity * doubleSalePrice;
     }
-    return '₹$total';
+    return '$total';
   }
 }

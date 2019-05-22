@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hello_world/ContactScreen.dart';
+import 'package:hello_world/LedgerView.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -239,6 +240,10 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
           new Row(mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             new FlatButton(onPressed: (){
+              //TODO 22/05/2019 implement ledger
+              showLedger(_contactDatabase[index].objectId);
+            }, child: new Text('Ledger')),
+            new FlatButton(onPressed: (){
               editContact(_contactDatabase[index]);
             }, child: new Text('Edit')),
             new FlatButton(onPressed: (){
@@ -349,6 +354,14 @@ class _AdminContactsScreenState extends State<AdminContactsScreen> {
       }
     }
     return queryBuilder.query();
+  }
+
+  void showLedger(String objectId) {
+    Navigator.of(context).push(new MaterialPageRoute(
+        builder: (context) =>
+            LedgerView(
+              ledgerID: objectId,
+            )));
   }
 
 }
