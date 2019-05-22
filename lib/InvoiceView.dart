@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hello_world/DataClasses/ContactDatabase.dart';
 import 'package:hello_world/DataClasses/InvoiceDatabase.dart';
+import 'package:hello_world/DataClasses/LedgerDatabase.dart';
 import 'package:hello_world/PaymentView.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,6 +30,7 @@ class _InvoiceViewState extends State<InvoiceView> {
   String roCode;
 
   ContactDatabase invoiceContact = new ContactDatabase();
+
   initSharedPrefs() async {
     sharedPreferences = await SharedPreferences.getInstance();
     if (sharedPreferences != null) {
@@ -51,17 +53,20 @@ class _InvoiceViewState extends State<InvoiceView> {
     invoiceNumber = widget.invoiceNumber;
     super.initState();
   }
+
   Future<void> getContactFromID(String objectID) async {
     ParseResponse apiResponse = await ContactDatabase().getObject(objectID);
 
     if (apiResponse.success && apiResponse.count > 0) {
       setState(() {
         invoiceContact = apiResponse.result;
+
       });
     } else {
       print(keyAppName + ': ' + apiResponse.error.message);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,58 +78,70 @@ class _InvoiceViewState extends State<InvoiceView> {
           child: Container(
             child: Column(
               children: <Widget>[
-                Text('${invoiceContact.contact_name}\n${invoiceContact.contact_address}\n${invoiceContact.contact_phone}'),
-                Flexible(child: DataTable(
-                    columns: <DataColumn>[
-                      DataColumn(
-                          label: Expanded(
-                            child: Container(child: Text('Name')),
-                            flex: 2,
-                          )),
-                      DataColumn(
-                          label: Expanded(
-                              child: Container(child: Text('Quantity')), flex: 1)),
-//              DataColumn(label: Text('Tax')),
-                      DataColumn(
-                          label: Expanded(
-                            child: Container(child: Text('MRP')),
-                            flex: 1,
-                          )),
-                      DataColumn(
-                          label: Expanded(
-                            child: Container(child: Text('Total')),
-                            flex: 3,
-                          )),
-                    ],
-                    /*TODO error
-                      * Another exception was thrown: RangeError (index): Invalid value: Not in range 0..2, inclusive: 3*/
-                    rows: List.generate(_invoiceDatabase.length, (index) {
-                      return DataRow(cells: <DataCell>[
-//                    DataCell(IconButton(
-//                        icon: Icon(Icons.clear),
-//                        onPressed: () {
-//                          setState(() {
-//                            _selectedProductDatabase.removeAt(index);
-//
-//                            _quantity.removeAt(index);
-//                          });
-//                        })),
-                        DataCell(Text(_invoiceDatabase[index].product_name)),
-                        DataCell(Text('${_invoiceDatabase[index].product_quantity}')),
-//                DataCell(Text(_selectedProductDatabase[index].taxName)),
-                        DataCell(Text(_invoiceDatabase[index].product_price_MRP)),
-                        DataCell(Text(_invoiceDatabase[index].product_price_total)),
-                      ]);
-                    })),
+                Text(
+                    '${invoiceContact.contact_name}\n${invoiceContact.contact_address}\n${invoiceContact.contact_phone}'),
+                Flexible(
+                  child: DataTable(
+                      columns: <DataColumn>[
+                        DataColumn(
+                            label: Expanded(
+                          child: Container(child: Text('Name')),
+                          flex: 2,
+                        )),
+                        DataColumn(
+                            label: Expanded(
+                                child: Container(child: Text('Quantity')),
+                                flex: 1)),
+                        DataColumn(
+                            label: Expanded(
+                          child: Container(child: Text('MRP')),
+                          flex: 1,
+                        )),
+                        DataColumn(
+                            label: Expanded(
+                          child: Container(child: Text('Total')),
+                          flex: 3,
+                        )),
+                      ],
+                      rows: List.generate(_invoiceDatabase.length, (index) {
+                        return DataRow(cells: <DataCell>[
+                          DataCell(Text(_invoiceDatabase[index].product_name)),
+                          DataCell(Text(
+                              '${_invoiceDatabase[index].product_quantity}')),
+                          DataCell(
+                              Text(_invoiceDatabase[index].product_price_MRP)),
+                          DataCell(Text(
+                              _invoiceDatabase[index].product_price_total)),
+                        ]);
+                      })),
                 ),
-                RaisedButton(onPressed: (){
-                  showPaymentView(invoiceContact, _invoiceDatabase[0]);
-                },child: Text('Make Payment'),)
+                RaisedButton(
+                  onPressed: () {
+                    showPaymentView(invoiceContact, _invoiceDatabase[0]);
+                  },
+                  child: Text('Make Payment'),
+                ),
+                Text('Corresponding Payments'),
+                Container(
+                  child: FutureBuilder(builder: (BuildContext context, AsyncSnapshot snapshot){
+                    if(snapshot.hasData){
+                      print('snapshot is ${snapshot.toString()}');
+                      if(snapshot.connectionState==ConnectionState.done){
+                        print('snapshot data is ${snapshot.data.toString()}');
+                        return LedgerDatabase().buildData(snapshot.data);
+                      }
+                    }else{
+                      return new CircularProgressIndicator();
+                    }
+
+                  },future: LedgerDatabase().checkEntry(roCode, invoiceContact.objectId, 'Payment for Invoice # $invoiceNumber'),),
+                )
               ],
             ),
           ),
         ));
   }
+
 
   List<InvoiceDatabase> _invoiceDatabase = [];
 
@@ -142,7 +159,6 @@ class _InvoiceViewState extends State<InvoiceView> {
       final List<ParseObject> listFromApi = apiResponse.result;
       _invoiceDatabase = new List();
       for (int i = 0; i < listFromApi.length; i++) {
-//        print(listFromApi[i].toString());
         Map output = json.decode(listFromApi[i].toString());
         InvoiceDatabase invoiceDatabase =
             new InvoiceDatabase().fromJson(output);
@@ -156,11 +172,14 @@ class _InvoiceViewState extends State<InvoiceView> {
     }
   }
 
-  void showPaymentView(ContactDatabase contactDatabase, InvoiceDatabase invoiceDatabase) {
+
+
+
+  void showPaymentView(
+      ContactDatabase contactDatabase, InvoiceDatabase invoiceDatabase) {
     print('InvoiceView Contact ${invoiceContact.contact_name}');
     Navigator.of(context).push(new MaterialPageRoute(
-        builder: (context) =>
-            PaymentView(
+        builder: (context) => PaymentView(
               contactDatabase: invoiceContact,
               invoiceDatabase: invoiceDatabase,
             )));
