@@ -133,8 +133,7 @@ class _InvoiceViewState extends State<InvoiceView> {
                     }else{
                       return new CircularProgressIndicator();
                     }
-
-                  },future: LedgerDatabase().checkEntry(roCode, invoiceContact.objectId, 'Payment for Invoice # $invoiceNumber'),),
+                  },future: LedgerDatabase().checkEntry(roCode, invoiceContact.objectId, 'Payment for Sale Invoice # $invoiceNumber'),),
                 )
               ],
             ),

@@ -63,7 +63,7 @@ class _PaymentViewState extends State<PaymentView> {
             ),
             RaisedButton(onPressed: () async {
               //TODO implement ledger entry
-              var entry =  LedgerDatabase().makeEntry(roCode, contactDatabase.objectId, 'Payment for Invoice # ${invoiceDatabase.invoice_number}', 0, double.parse(paymentAmountController.text));
+              var entry =  LedgerDatabase().makeEntry(roCode, contactDatabase.objectId, 'Payment for Sale Invoice # ${invoiceDatabase.invoice_number}', 0, double.parse(paymentAmountController.text));
               entry.then((result){
                 if(result){
                   Fluttertoast.showToast(msg: 'Entry Successful');
