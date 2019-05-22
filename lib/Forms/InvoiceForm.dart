@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hello_world/ContactScreen.dart';
 import 'package:hello_world/DataClasses/ContactDatabase.dart';
 import 'package:hello_world/DataClasses/InvoiceDatabase.dart';
+import 'package:hello_world/DataClasses/LedgerDatabase.dart';
 import 'package:hello_world/DataClasses/ProductDatabase.dart';
 import 'package:hello_world/DataClasses/RODatabase.dart';
 import 'package:hello_world/productscreen.dart';
@@ -188,6 +189,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
 
             //Save all the product names in a string array
 
+            String total = '';
             for(int i=0;i<_selectedProductDatabase.length;i++){
               InvoiceDatabase invoiceDatabase = new InvoiceDatabase();
               invoiceDatabase.ro_code=roCode;
@@ -200,21 +202,27 @@ class _InvoiceFormState extends State<InvoiceForm> {
               invoiceDatabase.product_price_MRP=_selectedProductDatabase[i].salePrice;
               invoiceDatabase.product_price_total = calculation(_selectedProductDatabase[i].salePrice,_quantity[i]).toString();
               invoiceDatabase.invoice_price_total =calculateListTotal(_quantity, _selectedProductDatabase);
-            ParseResponse apiResponse = await invoiceDatabase.save();
+              total = invoiceDatabase.invoice_price_total;
+              ParseResponse apiResponse = await invoiceDatabase.save();
               if(apiResponse.success){
                 Fluttertoast.showToast(msg: 'Saved');
-                roDatabase.setIncrement('invoice_number', 1);
                 //TODO_completed 22/05/2019 Decrement product quantity
                 _selectedProductDatabase[i].setDecrement('product_quantity', _quantity[0]);
                 var productDecrease = await _selectedProductDatabase[i].save();
                 if(productDecrease.success){
                   Fluttertoast.showToast(msg: 'Product stock decreased');
-                }
-                var saveResponse = await roDatabase.save();
-                if(saveResponse.success){
-                Navigator.pop(context);
+                }else{
+                  Fluttertoast.showToast(msg: 'Error');
                 }
               }
+            }
+            roDatabase.setIncrement('invoice_number', 1);
+            var saveResponse = await roDatabase.save();
+            //TODO 22/05/2019 add to ledger
+            LedgerDatabase ledger = LedgerDatabase().makeEntry(roCode,invoiceContact.objectId, 'Invoice # $invoiceNumber', double.parse(total), 0);
+            ParseResponse ledgerResponse = await ledger.save();
+            if(saveResponse.success&&ledgerResponse.success){
+              Navigator.pop(context);
             }
           }),
         ],
