@@ -61,7 +61,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           );
         }
       },
-      //TODO 16/05/2019 -> TextEditingController should come for the _query(roCode,[])
       future: _query(roCode, 0),
 
 //      future: _query(roCode, invoiceSearchController.text),

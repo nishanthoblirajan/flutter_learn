@@ -159,7 +159,7 @@ class _productscreenState extends State<productscreen> {
         },
         title: Text(_productDatabase[index].name),
         subtitle: Text(" Quantity: " +
-            _productDatabase[index].quantity +
+            '${_productDatabase[index].quantity}' +
             " SKU: " +
             _productDatabase[index].sku),
         trailing: Text("\u20B9" + _productDatabase[index].salePrice),
@@ -238,7 +238,7 @@ class _productscreenState extends State<productscreen> {
                 onPressed: () {
                   Navigator.of(context).pop();
                   Navigator.of(context)
-                      .pop({'product_selection': _productDatabase[index].objectId,'quantity_selection':quantityController.text});                },
+                      .pop({'product_selection': _productDatabase[index].objectId,'quantity_selection':double.parse(quantityController.text)});                },
               )
             ],
           );

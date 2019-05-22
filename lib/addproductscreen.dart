@@ -45,7 +45,7 @@ class _addproductscreenState extends State<addproductscreen> {
       barcodeController.text = productDatabase.sku;
       salePriceController.text = productDatabase.salePrice;
       purchasePriceController.text = productDatabase.purchasePrice;
-      quantityController.text = productDatabase.quantity;
+      quantityController.text = productDatabase.quantity.toString();
       taxCodeController.text = productDatabase.taxCode;
       taxNameController.text = productDatabase.taxName;
       sgstController.text = productDatabase.sgst;
@@ -255,7 +255,7 @@ class _addproductscreenState extends State<addproductscreen> {
     productDatabase.sku = barcodeController.text;
     productDatabase.salePrice = salePriceController.text;
     productDatabase.purchasePrice = purchasePriceController.text;
-    productDatabase.quantity = quantityController.text;
+    productDatabase.quantity = double.parse(quantityController.text);
     productDatabase.taxCode = taxCodeController.text;
     productDatabase.taxName = taxNameController.text;
     productDatabase.sgst = sgstController.text;
@@ -302,7 +302,7 @@ class _addproductscreenState extends State<addproductscreen> {
     productDatabase.sku = barcodeController.text;
     productDatabase.salePrice = salePriceController.text;
     productDatabase.purchasePrice = purchasePriceController.text;
-    productDatabase.quantity = quantityController.text;
+    productDatabase.quantity = double.parse(quantityController.text);
     productDatabase.taxCode = taxCodeController.text;
     productDatabase.taxName = taxNameController.text;
     productDatabase.sgst = sgstController.text;

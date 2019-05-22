@@ -129,6 +129,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
 
               if (results != null && results.containsKey('product_selection')) {
                 getProductFromID(results['product_selection']);
+                print('product_selection is ${results['product_selection']}');
                 setState(() {
                   _quantity.add(results['quantity_selection']);
                 });
@@ -136,7 +137,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
             },
             child: new Text(('Add Products')),
           ),
-          /*TODO 16/05/2019 implement data table calculation*/
           Flexible(
             child: DataTable(
                 columns: <DataColumn>[
@@ -174,10 +174,10 @@ class _InvoiceFormState extends State<InvoiceForm> {
 //                          });
 //                        })),
                     DataCell(Text(_selectedProductDatabase[index].name)),
-                    DataCell(Text(_quantity[index])),
+                    DataCell(Text('${_quantity[index]}')),
 //                DataCell(Text(_selectedProductDatabase[index].taxName)),
                     DataCell(Text(_selectedProductDatabase[index].salePrice)),
-                    DataCell(calculateTotal(_quantity[index],
+                    DataCell(calculateTotal('${_quantity[index]}',
                         _selectedProductDatabase[index].salePrice)),
                   ]);
                 })),
@@ -204,10 +204,15 @@ class _InvoiceFormState extends State<InvoiceForm> {
               if(apiResponse.success){
                 Fluttertoast.showToast(msg: 'Saved');
                 roDatabase.setIncrement('invoice_number', 1);
+                //TODO_completed 22/05/2019 Decrement product quantity
+                _selectedProductDatabase[i].setDecrement('product_quantity', _quantity[0]);
+                var productDecrease = await _selectedProductDatabase[i].save();
+                if(productDecrease.success){
+                  Fluttertoast.showToast(msg: 'Product stock decreased');
+                }
                 var saveResponse = await roDatabase.save();
                 if(saveResponse.success){
                 Navigator.pop(context);
-
                 }
               }
             }
@@ -246,7 +251,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
   }
 
   List<ProductDatabase> _selectedProductDatabase = [];
-  List<String> _quantity = [];
+  List<num> _quantity = [];
   List<RODatabase> _roList = [];
   ContactDatabase invoiceContact;
 
@@ -275,17 +280,17 @@ class _InvoiceFormState extends State<InvoiceForm> {
     return Text('₹$total');
   }
 
-  double calculation(String s1,String s2){
+  double calculation(String s1,num s2){
     double d1 = double.parse(s1);
-    double d2 = double.parse(s2);
+    double d2 = s2;
     return d1*d2;
   }
 
    String calculateListTotal(
-      List<String> quantity, List<ProductDatabase> selectedProductDatabase) {
+      List<num> quantity, List<ProductDatabase> selectedProductDatabase) {
     double total = 0;
     for (int i = 0; i < quantity.length; i++) {
-      double doubleQuantity = double.parse(quantity[i]);
+      double doubleQuantity = quantity[i];
       double doubleSalePrice =
           double.parse(selectedProductDatabase[i].salePrice);
       total += doubleQuantity * doubleSalePrice;

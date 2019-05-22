@@ -109,7 +109,7 @@ class _InvoiceViewState extends State<InvoiceView> {
 //                          });
 //                        })),
                         DataCell(Text(_invoiceDatabase[index].product_name)),
-                        DataCell(Text(_invoiceDatabase[index].product_quantity)),
+                        DataCell(Text('${_invoiceDatabase[index].product_quantity}')),
 //                DataCell(Text(_selectedProductDatabase[index].taxName)),
                         DataCell(Text(_invoiceDatabase[index].product_price_MRP)),
                         DataCell(Text(_invoiceDatabase[index].product_price_total)),

@@ -33,8 +33,8 @@ class ProductDatabase extends ParseObject implements ParseCloneable{
   set purchasePrice(String purchasePrice) => set<String>(keyPurchasePrice, purchasePrice);
 
   static const String keyQuantity = 'product_quantity';
-  String get quantity => get<String>(keyQuantity);
-  set quantity(String quantity) => set<String>(keyQuantity, quantity);
+  num get quantity => get<num>(keyQuantity);
+  set quantity(num quantity) => set<num>(keyQuantity, quantity);
 
   //tax_code is the tax value
   //tax_name will be the name of the tax or the tax code
