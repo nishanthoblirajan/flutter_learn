@@ -73,7 +73,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
 
   TextEditingController contactNameController = new TextEditingController();
 
-  //TODO 22/05/2019 place the datatable inside futurebuilder
+  //TODO 22/05/2019 place the datatable inside futurebuilder or use something else entirely
+
 
   @override
   Widget build(BuildContext context) {
