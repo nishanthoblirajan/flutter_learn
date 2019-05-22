@@ -46,7 +46,7 @@ class _LedgerViewState extends State<LedgerView> {
         if (snapshot.hasData) {
           if (snapshot.data != null) {
             print('Im Inside');
-            return ListView(children: _getData(snapshot));
+            return _getData(snapshot);
           } else {
             return Center(
               child: new CircularProgressIndicator(),
@@ -100,7 +100,7 @@ class _LedgerViewState extends State<LedgerView> {
 
   List<LedgerDatabase> _ledgerDatabase = [];
 
-  List<Widget> _getData(AsyncSnapshot snapshot) {
+  Widget _getData(AsyncSnapshot snapshot) {
     ParseResponse apiResponse = snapshot.data;
     if (apiResponse.success && apiResponse.result != null) {
       final List<ParseObject> listFromApi = apiResponse.result;
@@ -114,14 +114,45 @@ class _LedgerViewState extends State<LedgerView> {
       }
     }
 
-    List<Widget> widgetLists = new List();
-    for (int index = 0; index < _ledgerDatabase.length; index++) {
-      widgetLists.add(ListTile(
-        title: Text(_ledgerDatabase[index].ledger_description),
-        trailing: Text('${_ledgerDatabase[index].plus}'),
-      ));
+    num ledgerBalance = 0;
+    //Remove all the zeros
+    for(int i=0;i<_ledgerDatabase.length;i++){
+        ledgerBalance =ledgerBalance+_ledgerDatabase[i].plus-_ledgerDatabase[i].minus;
     }
-    return widgetLists;
+
+    //Working now
+    return Column(
+      children: <Widget>[
+        Text('Ledger Balance is $ledgerBalance'),
+        DataTable(
+            columns: <DataColumn>[
+              DataColumn(
+                  label: Expanded(
+                    child: Container(child: Text('Description')),
+                    flex: 2,
+                  )),
+              DataColumn(
+                  label: Expanded(
+                      child: Container(child: Text('Plus')), flex: 1)),
+//              DataColumn(label: Text('Tax')),
+              DataColumn(
+                  label: Expanded(
+                    child: Container(child: Text('Minus')),
+                    flex: 1,
+                  )),
+            ],
+            /*TODO error
+                  * Another exception was thrown: RangeError (index): Invalid value: Not in range 0..2, inclusive: 3*/
+            rows: List.generate(_ledgerDatabase.length, (index) {
+              return DataRow(cells: <DataCell>[
+                DataCell(Text(_ledgerDatabase[index].ledger_description)),
+                DataCell(Text('${_ledgerDatabase[index].plus}')),
+                DataCell(Text('${_ledgerDatabase[index].minus}')),
+              ]);
+            })),
+      ],
+    );
+
   }
 
   Future<void> getContactFromID(String objectID) async {

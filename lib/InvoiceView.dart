@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hello_world/DataClasses/ContactDatabase.dart';
 import 'package:hello_world/DataClasses/InvoiceDatabase.dart';
+import 'package:hello_world/PaymentView.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -114,7 +115,11 @@ class _InvoiceViewState extends State<InvoiceView> {
                         DataCell(Text(_invoiceDatabase[index].product_price_MRP)),
                         DataCell(Text(_invoiceDatabase[index].product_price_total)),
                       ]);
-                    }))),
+                    })),
+                ),
+                RaisedButton(onPressed: (){
+                  showPaymentView(invoiceContact, _invoiceDatabase[0]);
+                },child: Text('Make Payment'),)
               ],
             ),
           ),
@@ -149,5 +154,15 @@ class _InvoiceViewState extends State<InvoiceView> {
         });
       }
     }
+  }
+
+  void showPaymentView(ContactDatabase contactDatabase, InvoiceDatabase invoiceDatabase) {
+    print('InvoiceView Contact ${invoiceContact.contact_name}');
+    Navigator.of(context).push(new MaterialPageRoute(
+        builder: (context) =>
+            PaymentView(
+              contactDatabase: invoiceContact,
+              invoiceDatabase: invoiceDatabase,
+            )));
   }
 }

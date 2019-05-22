@@ -218,14 +218,14 @@ class _InvoiceFormState extends State<InvoiceForm> {
             }
             roDatabase.setIncrement('invoice_number', 1);
             var saveResponse = await roDatabase.save();
-            //TODO 22/05/2019 add to ledger
-            LedgerDatabase ledger = LedgerDatabase().makeEntry(roCode,invoiceContact.objectId, 'Invoice # $invoiceNumber', double.parse(total), 0);
-            ParseResponse ledgerResponse = await ledger.save();
-            if(saveResponse.success&&ledgerResponse.success){
+            //TODO_completed 22/05/2019 add to ledger
+
+//            the ledger returns a true if the save operation is successful
+            bool ledger = await LedgerDatabase().makeEntry(roCode,invoiceContact.objectId, 'Invoice # $invoiceNumber', double.parse(total), 0);
+            if(saveResponse.success&&ledger){
               Navigator.pop(context);
             }else{
               print('RODatabase ${saveResponse.result.toString()}');
-              print('LedgerResponse ${ledgerResponse.result.toString()}');
             }
           }),
         ],

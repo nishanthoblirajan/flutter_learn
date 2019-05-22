@@ -42,13 +42,19 @@ class LedgerDatabase extends ParseObject implements ParseCloneable {
 
   set minus(num minus) => super.set<num>(keyMinus, minus);
 
-  LedgerDatabase makeEntry(String roCode,String ledgerID,String desc,num plus,num minus){
+  Future<bool> makeEntry(String roCode,String ledgerID,String desc,num plus,num minus) async {
     LedgerDatabase ledgerDatabase = new LedgerDatabase();
     ledgerDatabase.ro_code = roCode;
     ledgerDatabase.ledger_id=ledgerID;
     ledgerDatabase.ledger_description=desc;
     ledgerDatabase.plus=plus;
     ledgerDatabase.minus=minus;
-    return ledgerDatabase;
+    ParseResponse response = await ledgerDatabase.save();
+    if(response.success){
+      print('ledger saves successfully for desc $desc');
+      return true;
+    }else{
+      return false;
+    }
   }
 }
